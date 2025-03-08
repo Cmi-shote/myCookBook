@@ -70,7 +70,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //media3 dependencies
-    implementation(libs.media3.core)
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.ui)
+    implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+
+    implementation(libs.material.icons.extended)
 }
