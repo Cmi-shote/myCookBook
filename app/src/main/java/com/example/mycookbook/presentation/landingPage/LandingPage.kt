@@ -1,4 +1,4 @@
-package com.example.mycookbook.presentation
+package com.example.mycookbook.presentation.landingPage
 
 import android.net.Uri
 import android.view.Gravity
