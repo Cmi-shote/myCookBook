@@ -1,6 +1,5 @@
 package com.example.mycookbook.presentation.details
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -25,11 +25,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mycookbook.R
-import com.example.mycookbook.data.model.Ingredient
 import com.example.mycookbook.data.model.NutritionalDetails
 import com.example.mycookbook.data.model.RecipeDetails
-import com.example.mycookbook.presentation.utils.CounterButton
-import com.example.mycookbook.presentation.utils.IngredientsList
+import com.example.mycookbook.data.model.toDirectionList
+import com.example.mycookbook.presentation.utils.ButtonGroup
+import com.example.mycookbook.sampleIngredient
 import com.example.mycookbook.ui.theme.MyCookBookTheme
 
 @Composable
@@ -37,46 +37,41 @@ fun DetailsPage(
     modifier: Modifier = Modifier,
     selectedRecipe: RecipeDetails
 ) {
-    Column(
-        modifier = Modifier
+    LazyColumn(
+        modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
     ) {
-        Text(
-            text = selectedRecipe.title,
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        item {
+            DetailsHeader(selectedRecipe = selectedRecipe)
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "${selectedRecipe.mealType} / ${selectedRecipe.time}",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Light,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        items(selectedRecipe.ingredients) { ingredient ->
+            Ingredients(ingredient = ingredient)
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            selectedRecipe.nutritionInfo.forEach { (label, value, progress) ->
-                NutritionInfoItem(label, value, progress)
+            OutlinedButton(
+                onClick = { /* Your action here */ },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Add to Shopping List",
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(8.dp)
+                )
             }
         }
 
-        Spacer(modifier.height(16.dp))
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
             Row {
                 Text(
-                    text = "Ingredients",
+                    text = "Directions", //todo: add to string file
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -84,32 +79,29 @@ fun DetailsPage(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "4 serves",
+                    text = "${selectedRecipe.directions.toDirectionList().size} steps" ,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Light,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
-
-            CounterButton()
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        items(selectedRecipe.directions.toDirectionList()) { direction ->
 
-        IngredientsList(
-            modifier = Modifier.fillMaxWidth(),
-            ingredients = selectedRecipe.ingredients
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedButton(
-            onClick = { /* Your action here */ },
-//            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary) // Customize border color if needed
-        ) {
-            Text(text = "Add to Shopping List")
+            Directions(direction = direction)
         }
 
+        item {
+            ButtonGroup(
+                modifier = Modifier.fillMaxWidth(),
+                buttonLabelOne = "Save", //todo: move tp string res
+                buttonLabelTwo = "Cook This Dish",
+                buttonActionOne = {},
+                buttonActionTwo = {},
+                shouldTrailingIconTwoShow = true
+            )
+        }
     }
 }
 
@@ -139,14 +131,6 @@ fun NutritionInfoItem(label: String, value: String, progress: Float) {
 @Composable
 fun DetailsPagePreview() {
     MyCookBookTheme {
-        val sampleIngredient = (1..10).map {
-            Ingredient(
-                image = R.drawable.images,
-                name = "Tomatoes",
-                quantity = "500 g"
-            )
-        }
-
         DetailsPage(
             selectedRecipe = RecipeDetails(
                 foodImage = R.drawable.medium,
@@ -159,7 +143,8 @@ fun DetailsPagePreview() {
                     NutritionalDetails("Carbs", "47 g", 0.6f),
                     NutritionalDetails("Fat", "7 g", 0.3f)
                 ),
-                ingredients = sampleIngredient
+                ingredients = sampleIngredient,
+                directions = "Cook pasta. Cook pasta. Cook pasta"
             )
         )
     }
