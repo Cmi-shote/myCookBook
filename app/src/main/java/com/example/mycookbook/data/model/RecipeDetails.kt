@@ -6,7 +6,8 @@ data class RecipeDetails(
     val mealType: String,
     val time: String,
     val nutritionInfo: List<NutritionalDetails>,
-    val ingredients: List<Ingredient>
+    val ingredients: List<Ingredient>,
+    val directions: String
 )
 
 data class NutritionalDetails(
@@ -20,3 +21,19 @@ data class Ingredient(
     val name: String,
     val quantity: String
 )
+
+data class Direction(
+    val step: Int,
+    val description: String,
+    val totalSteps: Int
+)
+
+fun String.toDirectionList(): List<Direction> {
+    val directions = this.split(".")
+        .map { it.trim() }         // Trim spaces around each step
+        .filter { it.isNotEmpty() } // Remove empty directions
+
+    return directions.mapIndexed { index, description ->
+        Direction(index + 1, description, directions.size)
+    }
+}
