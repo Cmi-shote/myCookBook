@@ -7,10 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.mycookbook.data.model.Ingredient
+import com.example.mycookbook.data.model.NutritionalDetails
+import com.example.mycookbook.data.model.RecipeDetails
+import com.example.mycookbook.presentation.details.DetailsScreen
 import com.example.mycookbook.ui.theme.MyCookBookTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +21,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyCookBookTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    DetailsScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        selectedRecipe = RecipeDetails(
+                            foodImage = R.drawable.medium,
+                            title = "Creamy Pasta",
+                            mealType = "Dessert",
+                            time = "30 mins",
+                            nutritionInfo = listOf(
+                                NutritionalDetails("Energy", "285 k", 0.75f),
+                                NutritionalDetails("Protein", "23 g", 0.5f),
+                                NutritionalDetails("Carbs", "47 g", 0.6f),
+                                NutritionalDetails("Fat", "7 g", 0.3f)
+                            ),
+                            ingredients = sampleIngredient,
+                            directions = "Cook pasta. Cook pasta. Cook pasta"
+                        )
                     )
                 }
             }
@@ -30,18 +44,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
+val sampleIngredient = (1..10).map {
+    Ingredient(
+        image = R.drawable.images,
+        name = "Tomatoes",
+        quantity = "500 g"
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyCookBookTheme {
-        Greeting("Android")
-    }
 }
