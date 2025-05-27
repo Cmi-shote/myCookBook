@@ -40,14 +40,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mycookbook.R
+import com.example.mycookbook.data.model.RecipeDetails
+import com.example.mycookbook.presentation.AppViewModel
+import com.example.mycookbook.sampleRecipeDetails
+import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun GroceryScreen(modifier: Modifier = Modifier) {
+fun GroceryScreen(
+    modifier: Modifier = Modifier,
+    onItemClicked: (RecipeDetails) -> Unit, //pass id or something
+    viewModel: AppViewModel = koinViewModel()
+) {
     val today = LocalDate.now()
     val weekDays = remember { getCurrentWeek(today) }
     var selectedDay by remember { mutableStateOf(today) }
@@ -55,13 +62,8 @@ fun GroceryScreen(modifier: Modifier = Modifier) {
     // Placeholder grocery data by day
     val groceryData = remember {
         mapOf(
-            weekDays[2] to listOf(
-                GroceryItemData(R.drawable.breakfast, "Blueberry Pancakes", 7, 20),
-                GroceryItemData(R.drawable.lunch, "Vegan Hummus Pitas", 15, 15),
-                GroceryItemData(R.drawable.dinner, "Vegan Chicken Salad", 7, 7),
-                GroceryItemData(R.drawable.breakfast, "Brown Butter Blondies", 17, 17),
-                GroceryItemData(R.drawable.lunch, "Poached Egg and Toast", 20, 20)
-            )
+            weekDays[2] to
+                    sampleRecipeDetails
         )
     }
     val items = groceryData[selectedDay] ?: emptyList()
@@ -98,7 +100,10 @@ fun GroceryScreen(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(items) { item ->
-                    GroceryItemCard(item)
+                    GroceryItemCard(data = item, onItemClicked = {
+                        viewModel.updateRecipe(item)
+                        onItemClicked(item)
+                    })
                 }
             }
         }
@@ -143,20 +148,17 @@ fun GroceryCalendarRow(
     }
 }
 
-data class GroceryItemData(
-    val imageRes: Int,
-    val title: String,
-    val current: Int,
-    val total: Int
-)
-
 @Composable
-fun GroceryItemCard(data: GroceryItemData) {
+fun GroceryItemCard(data: RecipeDetails, onItemClicked: (RecipeDetails) -> Unit = {}) {
+    val size = data.ingredients.size
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp),
+            .height(80.dp)
+            .clickable {
+                onItemClicked(data)
+            },
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
@@ -164,7 +166,7 @@ fun GroceryItemCard(data: GroceryItemData) {
             modifier = Modifier.fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = data.imageRes),
+                painter = painterResource(id = data.foodImage),
                 contentDescription = data.title,
                 modifier = Modifier
                     .width(120.dp)
@@ -180,13 +182,14 @@ fun GroceryItemCard(data: GroceryItemData) {
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
+
                 Text(
-                    text = "${data.current} / ${data.total} ingredients",
+                    text = "${data.current} / $size ingredients",
                     fontSize = 13.sp,
                     color = Color.Gray
                 )
             }
-            if (data.current == data.total) {
+            if (data.current == size) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Complete",

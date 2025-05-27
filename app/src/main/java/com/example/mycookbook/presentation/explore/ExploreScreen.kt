@@ -97,8 +97,7 @@ fun QuickSearchCard(imageRes: Int, label: String) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
-                fontSize = 16.sp,
-                color = Color(0xFF222B45)
+                fontSize = 16.sp
             )
         }
     }

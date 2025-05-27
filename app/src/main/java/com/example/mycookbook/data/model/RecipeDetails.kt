@@ -4,14 +4,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RecipeDetails(
-    val foodImage: Int,
-    val title: String,
-    val mealType: String,
-    val time: String,
-    val servings: String,
-    val nutritionInfo: List<NutritionalDetails>,
-    val ingredients: List<Ingredient>,
-    val directions: String
+    val foodImage: Int = 0,
+    val title: String = "",
+    val mealType: String = "",
+    val time: String = "",
+    val servings: String = "",
+    val nutritionInfo: List<NutritionalDetails> = arrayListOf(),
+    val ingredients: List<Ingredient> = arrayListOf(),
+    val directions: String = "",
+    val current: Int = 0
 )
 
 @Serializable

@@ -25,6 +25,7 @@ import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.details.DetailsScreen
 import com.example.mycookbook.presentation.explore.ExploreScreen
 import com.example.mycookbook.presentation.grocery.GroceryScreen
+import com.example.mycookbook.presentation.ingredients.IngredientsChecklistScreen
 import com.example.mycookbook.presentation.landingPage.LandingPage
 import com.example.mycookbook.presentation.recipes.RecipesScreen
 import com.example.mycookbook.presentation.splashScreen.SplashScreen
@@ -72,6 +73,13 @@ fun AppNavigation(navController: NavHostController, nextDestination: AppRoute) {
             val args = backStackEntry.toRoute<AppRoute.RecipeDetailsRoute>()
             DetailsScreen(
                 selectedRecipe = args.selectedRecipe,
+            )
+        }
+
+        composable<AppRoute.GroceryCheckListRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.RecipeDetailsRoute>()
+            IngredientsChecklistScreen(
+                selectedRecipe = args.selectedRecipe
             )
         }
     }
@@ -129,7 +137,10 @@ fun MainScreenWithBottomNav(navController: NavHostController) {
             }
             2 -> {
                 GroceryScreen(
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
+                    onItemClicked = { selectedRecipe ->
+                        navController.navigate(AppRoute.GroceryCheckListRoute(selectedRecipe))
+                    }
                 )
             }
         }
