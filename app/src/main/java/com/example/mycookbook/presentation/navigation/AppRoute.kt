@@ -12,6 +12,12 @@ sealed interface AppRoute {
     data object RecipeMainRoute : AppRoute
 
     @Serializable
+    data object ExploreRoute : AppRoute
+
+    @Serializable
+    data object GroceryRoute : AppRoute
+
+    @Serializable
     data class RecipeDetailsRoute(val selectedRecipe: RecipeDetails): AppRoute
 
     @Serializable

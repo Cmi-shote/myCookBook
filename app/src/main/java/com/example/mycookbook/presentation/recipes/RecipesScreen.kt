@@ -35,45 +35,22 @@ fun RecipesScreen(
     modifier: Modifier = Modifier,
     recipeDetails: List<RecipeDetails>,
     trending: List<Trending>,
-    onRecipeClick: (RecipeDetails) -> Unit
+    onRecipeClick: (RecipeDetails) -> Unit,
 ) {
-    Scaffold(
-        topBar = { RecipesTopBar() },
-        bottomBar = { RecipesBottomBar() }
-    ) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = "Recipes",
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             RecipeCardRow(recipeDetails = recipeDetails, onRecipeClick = onRecipeClick)
             Spacer(modifier = Modifier.height(24.dp))
             TrendingNowSection(trending)
         }
-    }
-}
-
-@Composable
-fun RecipesTopBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
-    ) {
-
-        IconButton(onClick = { /* TODO: Add new recipe */ }) {
-            Icon(Icons.Default.Add, contentDescription = "Add", tint = Color(0xFF7CA86E))
-        }
-    }
 }
 
 @Composable
@@ -169,45 +146,24 @@ fun TrendingNowRow(data: List<Trending>) {
 
 @Composable
 fun TrendingCard(data: Trending) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(100.dp)
-    ) {
-        Image(
-            painter = painterResource(id = data.imageRes),
-            contentDescription = data.title,
-            modifier = Modifier
-                .size(72.dp)
-                .clip(CircleShape)
-                .background(Color.White)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = data.title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-        Text(text = data.type, fontSize = 12.sp, color = Color.Gray)
-        Text(text = data.time, fontSize = 12.sp, color = Color.Gray)
+    Card {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.width(120.dp).padding(10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = data.imageRes),
+                contentDescription = data.title,
+                modifier = Modifier
+                    .size(90.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = data.title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text(text = data.type, fontSize = 12.sp, color = Color.Gray)
+            Text(text = data.time, fontSize = 12.sp, color = Color.Gray)
+        }
     }
 }
-
-@Composable
-fun RecipesBottomBar() {
-    NavigationBar {
-        NavigationBarItem(
-            selected = true,
-            onClick = { /* TODO: Recipes */ },
-            icon = { Icon(imageVector = Icons.Default.LocalDining, contentDescription = "Recipes") },
-            label = { Text("Recipes") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { /* TODO: Explore */ },
-            icon = { Icon(imageVector = Icons.Default.Search, contentDescription = "Explore") },
-            label = { Text("Explore") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { /* TODO: Grocery */ },
-            icon = { Icon(imageVector = Icons.AutoMirrored.Filled.PlaylistAddCheck, contentDescription = "Grocery") },
-            label = { Text("Grocery") }
-        )
-    }
-} 
