@@ -46,8 +46,8 @@ fun DetailsScreen(
             Image(
                 painter = painterResource(id = selectedRecipe.foodImage),
                 contentDescription = "Background Image",
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth()
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
             )
         }
     }

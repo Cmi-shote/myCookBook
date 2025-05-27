@@ -144,7 +144,8 @@ fun DetailsPagePreview() {
                     NutritionalDetails("Fat", "7 g", 0.3f)
                 ),
                 ingredients = sampleIngredient,
-                directions = "Cook pasta. Cook pasta. Cook pasta"
+                directions = "Cook pasta. Cook pasta. Cook pasta",
+                servings = "2"
             )
         )
     }

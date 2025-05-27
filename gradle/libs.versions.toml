@@ -1,6 +1,6 @@
 [versions]
 agp = "8.6.1"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -12,6 +12,7 @@ uiTextGoogleFonts = "1.7.8"
 media3CommonKtx = "1.5.1"
 media3Exoplayer = "1.5.1"
 media3Ui = "1.5.1"
+datastorePreferences = "1.1.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,10 +33,16 @@ androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3Exoplayer" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Ui" }
-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version = "1.5.1" }
+material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.9.0" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.3"}
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+splash-screen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version = "6.0.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -75,4 +76,15 @@ dependencies {
     implementation(libs.androidx.media3.ui)
 
     implementation(libs.material.icons.extended)
+
+    //navigation compose
+    implementation(libs.navigation.compose)
+    //kotlinx serialization
+    implementation(libs.kotlinx.serialization.json)
+    //preference datastore
+    implementation(libs.androidx.datastore.preferences)
+    //lottie animation
+    implementation(libs.lottie.compose)
+    //splash screen
+    implementation(libs.splash.screen)
 }

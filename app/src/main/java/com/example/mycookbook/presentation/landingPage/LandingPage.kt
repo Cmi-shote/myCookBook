@@ -1,19 +1,31 @@
 package com.example.mycookbook.presentation.landingPage
 
 import android.net.Uri
-import android.view.Gravity
-import android.widget.FrameLayout
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -21,61 +33,122 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.mycookbook.R
+import com.example.mycookbook.presentation.utils.UserPreferences
+import kotlinx.coroutines.launch
 
 @Composable
-fun LandingPage(modifier: Modifier = Modifier) {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun LandingPage(
+    modifier: Modifier = Modifier,
+    onButtonClick: () -> Unit = {}
+) {
+    val pagerState = rememberPagerState(pageCount = { 3 })
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val userPreferences = remember { UserPreferences(context) }
+
+    Box(modifier = modifier.fillMaxSize()) {
         VideoBackground()
 
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(32.dp),
-            verticalArrangement = Arrangement.Bottom,
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
-                text = "Welcome to My CookBook",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Cook new dishes, share them with friends, make your loved ones happy!",
-                color = Color.White,
-                fontWeight = FontWeight.Light,
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-                Icon(
-                    imageVector = Icons.Default.Email,
-                    contentDescription = "Email Icon",
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Sign up with Email")
+            // Horizontal pager
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.weight(1f)
+            ) { page ->
+                when (page) {
+                    0 -> OnboardingPage(
+                        title = "Welcome to My CookBook",
+                        description = "Cook new dishes, share them with friends, make your loved ones happy!"
+                    )
+                    1 -> OnboardingPage(
+                        title = "Learn to Cook Easily",
+                        description = "Step-by-step recipes and video tutorials to help you master the art of cooking"
+                    )
+                    2 -> OnboardingPage(
+                        title = "Join Our Community",
+                        description = "Connect with other food lovers and share your culinary journey",
+                        showButton = true,
+                        onButtonClick = {
+                            scope.launch {
+                                userPreferences.setOnboardingSeen(true)
+                            }
+                            onButtonClick()
+                        }
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
+                Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "Already have an account?",
-//                    fontWeight = FontWeight.B,
-                    color = Color.White
-                )
-                TextButton(onClick = {}) { Text("Sign in", color = Color.White) }
+                repeat(pagerState.pageCount) { iteration ->
+                    val color = if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(16.dp)
+                    )
+                }
             }
         }
     }
 }
 
+@Composable
+private fun OnboardingPage(
+    title: String,
+    description: String,
+    showButton: Boolean = false,
+    onButtonClick: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 32.dp),
+        verticalArrangement = Arrangement.Bottom,
+    ) {
+        Text(
+            text = title,
+            color = Color.White,
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = description,
+            color = Color.White,
+            fontWeight = FontWeight.Light,
+        )
+        
+        if (showButton) {
+            Spacer(modifier = Modifier.height(32.dp))
+            Button(
+                onClick = onButtonClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Let's Begin")
+            }
+        }
+    }
+}
+
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun VideoBackground() {
     val context = LocalContext.current
@@ -105,11 +178,11 @@ fun VideoBackground() {
                     player = exoPlayer
                     useController = false
                     resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
+                    layoutParams = android.widget.FrameLayout.LayoutParams(
+                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT
                     ).apply {
-                        gravity = Gravity.CENTER
+                        gravity = android.view.Gravity.CENTER
                     }
                 }
             },
