@@ -22,4 +22,7 @@ sealed interface AppRoute {
 
     @Serializable
     data object SplashScreen : AppRoute
+
+    @Serializable
+    data object MainWithBottomNav : AppRoute
 }

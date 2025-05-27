@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
 
                 AppNavigation(
                     navController = navController,
-                    nextDestination = if (onboardingSeen) AppRoute.RecipeMainRoute else AppRoute.OnboardingRoute
+                    nextDestination = if (onboardingSeen) AppRoute.MainWithBottomNav else AppRoute.OnboardingRoute
                 )
             }
         }
