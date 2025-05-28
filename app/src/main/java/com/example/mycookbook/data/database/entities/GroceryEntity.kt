@@ -11,6 +11,6 @@ import com.example.mycookbook.util.Constants.Companion.GROCERY_TABLE
 @TypeConverters(GroceryTypeConverters::class)
 class GroceryEntity(
     @PrimaryKey(autoGenerate = true)
-    var id: Int,
+    var id: Int = 0,
     var result: Grocery
 )

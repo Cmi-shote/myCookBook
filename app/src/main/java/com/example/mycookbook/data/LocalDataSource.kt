@@ -38,6 +38,10 @@ class LocalDataSource (
         recipesDao.deleteFavoriteRecipe(favoritesEntity)
     }
 
+    suspend fun deleteGroceryItem(groceryEntity: GroceryEntity) {
+        recipesDao.deleteGroceryItem(groceryEntity)
+    }
+
     suspend fun deleteAllFavoriteRecipes() {
         recipesDao.deleteAllFavoriteRecipes()
     }

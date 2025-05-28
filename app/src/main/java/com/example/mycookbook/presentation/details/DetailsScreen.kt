@@ -19,12 +19,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mycookbook.data.model.RecipeDetails
+import com.example.mycookbook.presentation.recipes.RecipesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     modifier: Modifier = Modifier,
-    selectedRecipe: RecipeDetails
+    selectedRecipe: RecipeDetails,
+    viewModel: RecipesViewModel
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp // Get the device screen height
@@ -37,7 +39,7 @@ fun DetailsScreen(
         scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState),
         sheetPeekHeight = screenHeight / 2, // Set peek height to half of the screen
         sheetContent = {
-            DetailsPage(selectedRecipe = selectedRecipe)
+            DetailsPage(selectedRecipe = selectedRecipe, viewModel = viewModel)
         }
     ) { paddingValues ->
         Column(
@@ -45,14 +47,11 @@ fun DetailsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(selectedRecipe.image)
                     .crossfade(true)
                     .build(),
-//                placeholder = painterResource(id = R.drawable.ic_placeholder), // Add your placeholder
-//                error = painterResource(id = R.drawable.ic_error), // Add your error image
                 contentDescription = selectedRecipe.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

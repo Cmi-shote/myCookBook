@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.mycookbook.data.DataStoreRepository
 import com.example.mycookbook.data.MealAndDietType
 import com.example.mycookbook.data.database.Repository
+import com.example.mycookbook.data.database.entities.FavoritesEntity
+import com.example.mycookbook.data.database.entities.GroceryEntity
 import com.example.mycookbook.data.database.entities.RecipesEntity
 import com.example.mycookbook.data.model.FoodRecipe
 import com.example.mycookbook.data.model.Grocery
@@ -191,8 +193,28 @@ class RecipesViewModel(
         insertRecipes(recipesEntity)
     }
 
-    private fun insertRecipes(recipesEntity: RecipesEntity) =
+    fun insertRecipes(recipesEntity: RecipesEntity) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.insertRecipes(recipesEntity)
+        }
+
+    fun insertFavoriteRecipe(favoritesEntity: FavoritesEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.insertFavoriteRecipes(favoritesEntity)
+        }
+
+    fun insertGroceryItem(groceryEntity: GroceryEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.insertGroceryList(groceryEntity)
+        }
+
+    fun deleteFavoriteRecipe(favoritesEntity: FavoritesEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.deleteFavoriteRecipe(favoritesEntity)
+        }
+
+    fun deleteGroceryItem(groceryEntity: GroceryEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.deleteGroceryItem(groceryEntity)
         }
 }

@@ -77,6 +77,7 @@ fun AppNavigation(
             val args = backStackEntry.toRoute<AppRoute.RecipeDetailsRoute>()
             DetailsScreen(
                 selectedRecipe = args.selectedRecipe,
+                viewModel = viewModel
             )
         }
 

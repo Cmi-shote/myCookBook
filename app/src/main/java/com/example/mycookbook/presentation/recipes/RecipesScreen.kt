@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,8 +47,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.mycookbook.data.database.entities.FavoritesEntity
+import com.example.mycookbook.data.model.FoodRecipe
 import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.utils.ErrorScreen
 import com.example.mycookbook.presentation.utils.ShimmerLoadingScreen
@@ -57,7 +61,6 @@ import java.util.Locale
 @Composable
 fun RecipesScreen(
     modifier: Modifier = Modifier,
-//    trending: List<Trending>,
     onRecipeClick: (RecipeDetails) -> Unit,
     viewModel: RecipesViewModel
 ) {
@@ -86,7 +89,7 @@ fun RecipesScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         if (recipe != null) {
-                            RecipeCardRow(recipeDetails = recipe, onRecipeClick = onRecipeClick)
+                            RecipeCardRow(recipeDetails = recipe, onRecipeClick = onRecipeClick, viewModel = viewModel)
                         }
                         Spacer(modifier = Modifier.height(24.dp))
                         TrendingNowSection(popularRecipes.results, onRecipeClick = onRecipeClick)
@@ -102,19 +105,20 @@ fun RecipesScreen(
 }
 
 @Composable
-fun RecipeCardRow(recipeDetails: List<RecipeDetails>, onRecipeClick: (RecipeDetails) -> Unit) {
+fun RecipeCardRow(recipeDetails: List<RecipeDetails>, onRecipeClick: (RecipeDetails) -> Unit, viewModel: RecipesViewModel) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(recipeDetails) { recipe ->
-            RecipeCard(recipe, onRecipeClick)
+            RecipeCard(recipe, onRecipeClick, viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, modifier: Modifier = Modifier) {
+fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, viewModel: RecipesViewModel, modifier: Modifier = Modifier) {
     var isFavorite by remember { mutableStateOf(false) }
+    
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
@@ -134,8 +138,6 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, modi
                         .data(data.image)
                         .crossfade(true)
                         .build(),
-//                    placeholder = painterResource(id = R.drawable.ic_placeholder), // Add your placeholder
-//                    error = painterResource(id = R.drawable.ic_error), // Add your error image
                     contentDescription = data.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -161,7 +163,6 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, modi
                 modifier = Modifier.padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Time icon and text
                 Icon(
                     imageVector = Icons.Default.AccessTime,
                     contentDescription = "Cook time",
@@ -177,7 +178,6 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, modi
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // Servings icon and text
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Servings",
@@ -196,12 +196,10 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, modi
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
-
                 Row(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Dish type icon
                     Icon(
                         imageVector = Icons.Default.Restaurant,
                         contentDescription = "Dish type",
@@ -226,16 +224,21 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, modi
 
                 IconButton(
                     onClick = {
-                        // Toggle favorite state
                         isFavorite = !isFavorite
-
-                        // Save to database
                         if (isFavorite) {
-                            // Add to favorites in database
-                            // Example: favoriteRepository.addToFavorites(itemId)
+                            // Add to favorites
+                            val favoritesEntity = FavoritesEntity(
+                                id = 0,
+                                result = data
+                            )
+                            viewModel.insertFavoriteRecipe(favoritesEntity)
                         } else {
-                            // Remove from favorites in database
-                            // Example: favoriteRepository.removeFromFavorites(itemId)
+                            // Remove from favorites
+                            val favoritesEntity = FavoritesEntity(
+                                id = 0,
+                                result = data
+                            )
+                            viewModel.deleteFavoriteRecipe(favoritesEntity)
                         }
                     },
                     modifier = Modifier.padding(8.dp)

@@ -26,14 +26,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mycookbook.data.database.entities.GroceryEntity
+import com.example.mycookbook.data.database.entities.RecipesEntity
+import com.example.mycookbook.data.model.FoodRecipe
+import com.example.mycookbook.data.model.Grocery
 import com.example.mycookbook.data.model.RecipeDetails
+import com.example.mycookbook.presentation.recipes.RecipesViewModel
 import com.example.mycookbook.presentation.utils.ButtonGroup
 import com.example.mycookbook.presentation.utils.formatRecipeSummary
+import java.time.LocalDate
 
 @Composable
 fun DetailsPage(
     modifier: Modifier = Modifier,
-    selectedRecipe: RecipeDetails
+    selectedRecipe: RecipeDetails,
+    viewModel: RecipesViewModel
 ) {
     LazyColumn(
         modifier = modifier
@@ -75,7 +82,11 @@ fun DetailsPage(
                 modifier = Modifier.fillMaxWidth(),
                 buttonLabelOne = "Save", //todo: move tp string res
                 buttonLabelTwo = "Cook This Dish",
-                buttonActionOne = {},
+                buttonActionOne = {
+                    // Save recipe to database
+                    val recipesEntity = RecipesEntity(FoodRecipe(listOf(selectedRecipe)))
+                    viewModel.insertRecipes(recipesEntity)
+                },
                 buttonActionTwo = {},
                 shouldTrailingIconTwoShow = true
             )
@@ -104,7 +115,6 @@ fun DetailsPage(
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
-
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -118,7 +128,19 @@ fun DetailsPage(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedButton(
-                onClick = { /* Your action here */ }, //todo: save to shopping list
+                onClick = {
+                    // Add to grocery list
+                    val groceryEntity = GroceryEntity(
+                        id = 0,
+                        result = Grocery(
+                            recipeDetails = selectedRecipe,
+                            current = 0,
+                            total = selectedRecipe.extendedIngredients.size,
+                            date = LocalDate.now().toString()
+                        )
+                    )
+                    viewModel.insertGroceryItem(groceryEntity)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -129,12 +151,6 @@ fun DetailsPage(
                 )
             }
         }
-
-//        items(selectedRecipe.summary.toDirectionList()) { direction ->
-//
-//            Directions(direction = direction)
-//        }
-
     }
 }
 
