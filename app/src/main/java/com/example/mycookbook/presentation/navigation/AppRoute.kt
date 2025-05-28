@@ -1,5 +1,6 @@
 package com.example.mycookbook.presentation.navigation
 
+import com.example.mycookbook.data.model.Grocery
 import com.example.mycookbook.data.model.RecipeDetails
 import kotlinx.serialization.Serializable
 
@@ -18,5 +19,5 @@ sealed interface AppRoute {
     data object MainWithBottomNav : AppRoute
 
     @Serializable
-    data class GroceryCheckListRoute(val selectedRecipe: RecipeDetails) : AppRoute
+    data class GroceryCheckListRoute(val selectedGrocery: Grocery) : AppRoute
 }

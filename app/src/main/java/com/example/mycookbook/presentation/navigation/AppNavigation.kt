@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.mycookbook.data.model.Grocery
 import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.details.DetailsScreen
 import com.example.mycookbook.presentation.explore.ExploreScreen
@@ -81,15 +82,15 @@ fun AppNavigation(
 
         composable<AppRoute.GroceryCheckListRoute>(
             typeMap = mapOf(
-                typeOf<RecipeDetails>() to CustomNavType(
-                    RecipeDetails::class,
-                    RecipeDetails.serializer()
+                typeOf<Grocery>() to CustomNavType(
+                    Grocery::class,
+                    Grocery.serializer()
                 )
             )
         ) { backStackEntry ->
-            val args = backStackEntry.toRoute<AppRoute.RecipeDetailsRoute>()
+            val args = backStackEntry.toRoute<AppRoute.GroceryCheckListRoute>()
             IngredientsChecklistScreen(
-                selectedRecipe = args.selectedRecipe
+                selectedGrocery = args.selectedGrocery
             )
         }
     }
@@ -144,7 +145,10 @@ fun MainScreenWithBottomNav(navController: NavHostController, viewModel: Recipes
             1 -> {
                 ExploreScreen(
                     modifier = Modifier.padding(paddingValues),
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    onRecipeClick = { selectedRecipe ->
+                        navController.navigate(AppRoute.RecipeDetailsRoute(selectedRecipe))
+                    }
                 )
             }
             2 -> {

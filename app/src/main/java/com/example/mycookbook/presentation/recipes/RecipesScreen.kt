@@ -113,11 +113,11 @@ fun RecipeCardRow(recipeDetails: List<RecipeDetails>, onRecipeClick: (RecipeDeta
 }
 
 @Composable
-fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit) {
+fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, modifier: Modifier = Modifier) {
     var isFavorite by remember { mutableStateOf(false) }
     Card(
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
+        modifier = modifier
             .width(250.dp)
             .height(250.dp)
             .clickable {

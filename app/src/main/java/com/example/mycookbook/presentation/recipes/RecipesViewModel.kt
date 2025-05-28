@@ -9,7 +9,7 @@ import com.example.mycookbook.data.MealAndDietType
 import com.example.mycookbook.data.database.Repository
 import com.example.mycookbook.data.database.entities.RecipesEntity
 import com.example.mycookbook.data.model.FoodRecipe
-import com.example.mycookbook.data.model.RecipeDetails
+import com.example.mycookbook.data.model.Grocery
 import com.example.mycookbook.presentation.utils.handleFoodRecipesResponse
 import com.example.mycookbook.presentation.utils.hasInternetConnection
 import com.example.mycookbook.util.Constants.Companion.API_KEY
@@ -25,11 +25,9 @@ import com.example.mycookbook.util.Constants.Companion.QUERY_SEARCH
 import com.example.mycookbook.util.Constants.Companion.QUERY_TYPE
 import com.example.mycookbook.util.NetworkResult
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 class RecipesViewModel(
@@ -53,8 +51,11 @@ class RecipesViewModel(
     private val _searchedRecipes = MutableStateFlow<NetworkResult<FoodRecipe>>(NetworkResult.Loading())
     val searchedRecipes: StateFlow<NetworkResult<FoodRecipe>> = _searchedRecipes.asStateFlow()
 
-    private val _popularRecipes = MutableStateFlow<FoodRecipe>(FoodRecipe(emptyList()))
+    private val _popularRecipes = MutableStateFlow(FoodRecipe(emptyList()))
     val popularRecipes: StateFlow<FoodRecipe> = _popularRecipes.asStateFlow()
+
+    private val _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
+    val groceryList: StateFlow<List<Grocery>> = _groceryList.asStateFlow()
 
     init {
         viewModelScope.launch {
