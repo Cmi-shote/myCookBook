@@ -24,6 +24,7 @@ import androidx.navigation.toRoute
 import com.example.mycookbook.data.model.Grocery
 import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.details.DetailsScreen
+import com.example.mycookbook.presentation.details.RecipeSourceScreen
 import com.example.mycookbook.presentation.explore.ExploreScreen
 import com.example.mycookbook.presentation.grocery.GroceryScreen
 import com.example.mycookbook.presentation.ingredients.IngredientsChecklistScreen
@@ -77,7 +78,10 @@ fun AppNavigation(
             val args = backStackEntry.toRoute<AppRoute.RecipeDetailsRoute>()
             DetailsScreen(
                 selectedRecipe = args.selectedRecipe,
-                viewModel = viewModel
+                viewModel = viewModel,
+                onNavigateToSource = { url ->
+                    navController.navigate(AppRoute.RecipeSourceRoute(url))
+                }
             )
         }
 
@@ -92,6 +96,16 @@ fun AppNavigation(
             val args = backStackEntry.toRoute<AppRoute.GroceryCheckListRoute>()
             IngredientsChecklistScreen(
                 selectedGrocery = args.selectedGrocery
+            )
+        }
+
+        composable<AppRoute.RecipeSourceRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<AppRoute.RecipeSourceRoute>()
+            RecipeSourceScreen(
+                sourceUrl = args.url,
+                onBackClick = {
+                    navController.popBackStack()
+                }
             )
         }
     }

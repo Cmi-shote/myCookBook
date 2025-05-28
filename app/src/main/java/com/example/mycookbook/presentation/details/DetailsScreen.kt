@@ -26,7 +26,8 @@ import com.example.mycookbook.presentation.recipes.RecipesViewModel
 fun DetailsScreen(
     modifier: Modifier = Modifier,
     selectedRecipe: RecipeDetails,
-    viewModel: RecipesViewModel
+    viewModel: RecipesViewModel,
+    onNavigateToSource: (String) -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp // Get the device screen height
@@ -39,7 +40,7 @@ fun DetailsScreen(
         scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState),
         sheetPeekHeight = screenHeight / 2, // Set peek height to half of the screen
         sheetContent = {
-            DetailsPage(selectedRecipe = selectedRecipe, viewModel = viewModel)
+            DetailsPage(selectedRecipe = selectedRecipe, viewModel = viewModel, onNavigateToSource = {onNavigateToSource(selectedRecipe.sourceUrl)})
         }
     ) { paddingValues ->
         Column(

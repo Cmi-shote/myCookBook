@@ -46,7 +46,8 @@ import java.time.LocalDate
 fun DetailsPage(
     modifier: Modifier = Modifier,
     selectedRecipe: RecipeDetails,
-    viewModel: RecipesViewModel
+    viewModel: RecipesViewModel,
+    onNavigateToSource: (String) -> Unit
 ) {
     val context = LocalContext.current
     var isFavorite by remember { mutableStateOf(false) }
@@ -115,7 +116,9 @@ fun DetailsPage(
                         Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
                     }
                 },
-                buttonActionTwo = {},
+                buttonActionTwo = {
+                    onNavigateToSource(selectedRecipe.sourceUrl)
+                },
                 shouldTrailingIconTwoShow = true,
                 isFavorite = isFavorite
             )

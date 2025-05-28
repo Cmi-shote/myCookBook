@@ -20,4 +20,7 @@ sealed interface AppRoute {
 
     @Serializable
     data class GroceryCheckListRoute(val selectedGrocery: Grocery) : AppRoute
+
+    @Serializable
+    data class RecipeSourceRoute(val url: String) : AppRoute
 }
