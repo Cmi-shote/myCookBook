@@ -77,7 +77,7 @@ fun ExploreScreen(modifier: Modifier = Modifier, viewModel: RecipesViewModel, on
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 items(recipes) { recipe ->
-                                    RecipeCard(data = recipe, onRecipeClick = onRecipeClick, modifier.fillMaxWidth())
+                                    RecipeCard(data = recipe, onRecipeClick = onRecipeClick, modifier = Modifier.fillMaxWidth(), viewModel = viewModel)
                                 }
                             }
                         } else {

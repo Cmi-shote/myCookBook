@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RecipesViewModel(
     private val context: Context,
@@ -50,6 +51,9 @@ class RecipesViewModel(
     private val _recipes = MutableStateFlow<NetworkResult<FoodRecipe>>(NetworkResult.Loading())
     val recipes: StateFlow<NetworkResult<FoodRecipe>> = _recipes.asStateFlow()
 
+    private val _favoriteRecipes = MutableStateFlow<List<FavoritesEntity>>(emptyList())
+    val favoriteRecipes: StateFlow<List<FavoritesEntity>> = _favoriteRecipes.asStateFlow()
+
     private val _searchedRecipes = MutableStateFlow<NetworkResult<FoodRecipe>>(NetworkResult.Loading())
     val searchedRecipes: StateFlow<NetworkResult<FoodRecipe>> = _searchedRecipes.asStateFlow()
 
@@ -63,6 +67,13 @@ class RecipesViewModel(
         viewModelScope.launch {
             dataStoreRepository.readBackOnline.collect { backOnlineValue ->
                 _backOnlineState.value = backOnlineValue
+            }
+        }
+
+        // Observe favorite recipes
+        viewModelScope.launch {
+            repository.local.readFavoriteRecipes().collect { favorites ->
+                _favoriteRecipes.value = favorites
             }
         }
 
@@ -216,5 +227,8 @@ class RecipesViewModel(
     fun deleteGroceryItem(groceryEntity: GroceryEntity) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.deleteGroceryItem(groceryEntity)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Item removed from grocery list", Toast.LENGTH_SHORT).show()
+            }
         }
 }

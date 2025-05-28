@@ -1,5 +1,6 @@
 package com.example.mycookbook.presentation.recipes
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,6 +66,7 @@ fun RecipesScreen(
     viewModel: RecipesViewModel
 ) {
     val recipes by viewModel.recipes.collectAsState()
+    val favoriteRecipes by viewModel.favoriteRecipes.collectAsState()
     val popularRecipes by viewModel.popularRecipes.collectAsState()
 
     Box(
@@ -79,22 +81,37 @@ fun RecipesScreen(
 
             is NetworkResult.Success -> {
                 recipes.data?.results.let { recipe ->
-                    Column(
+                    LazyColumn(
                         modifier = modifier
                             .fillMaxSize()
                     ) {
-                        Text(
-                            text = "Recipes",
-                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        if (recipe != null) {
-                            RecipeCardRow(recipeDetails = recipe, onRecipeClick = onRecipeClick, viewModel = viewModel)
+                        item {
+                            if (recipe != null) {
+                                Text(
+                                    text = "Recipes",
+                                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                RecipeCardRow(recipeDetails = recipe, onRecipeClick = onRecipeClick, viewModel = viewModel)
+                            }
+                            Spacer(modifier = Modifier.height(24.dp))
+                            TrendingNowSection(popularRecipes.results, onRecipeClick = onRecipeClick)
+                            Spacer(modifier = Modifier.height(24.dp))
+                            if (favoriteRecipes.isNotEmpty()) {
+                                Text(
+                                    text = "Favorite Recipes",
+                                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                RecipeCardRow(
+                                    recipeDetails = favoriteRecipes.map { it.result },
+                                    onRecipeClick = onRecipeClick,
+                                    viewModel = viewModel
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.height(24.dp))
-                        TrendingNowSection(popularRecipes.results, onRecipeClick = onRecipeClick)
                     }
-                } ?: ErrorScreen(message = "No ")
+                } ?: ErrorScreen(message = "No recipes found")
             }
 
             is NetworkResult.Error -> {
@@ -117,8 +134,10 @@ fun RecipeCardRow(recipeDetails: List<RecipeDetails>, onRecipeClick: (RecipeDeta
 
 @Composable
 fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, viewModel: RecipesViewModel, modifier: Modifier = Modifier) {
-    var isFavorite by remember { mutableStateOf(false) }
-    
+    val favoriteRecipes by viewModel.favoriteRecipes.collectAsState()
+    val isFavorite = favoriteRecipes.any { it.result.recipeId == data.recipeId }
+    val context = LocalContext.current
+
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
@@ -224,21 +243,22 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, view
 
                 IconButton(
                     onClick = {
-                        isFavorite = !isFavorite
                         if (isFavorite) {
-                            // Add to favorites
-                            val favoritesEntity = FavoritesEntity(
-                                id = 0,
-                                result = data
-                            )
-                            viewModel.insertFavoriteRecipe(favoritesEntity)
-                        } else {
                             // Remove from favorites
                             val favoritesEntity = FavoritesEntity(
                                 id = 0,
                                 result = data
                             )
                             viewModel.deleteFavoriteRecipe(favoritesEntity)
+                            Toast.makeText(context, "Recipe removed from favorites", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Add to favorites
+                            val favoritesEntity = FavoritesEntity(
+                                id = 0,
+                                result = data
+                            )
+                            viewModel.insertFavoriteRecipe(favoritesEntity)
+                            Toast.makeText(context, "Recipe added to favorites", Toast.LENGTH_SHORT).show()
                         }
                     },
                     modifier = Modifier.padding(8.dp)

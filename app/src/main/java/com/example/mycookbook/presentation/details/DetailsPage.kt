@@ -1,6 +1,7 @@
 package com.example.mycookbook.presentation.details
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +44,8 @@ fun DetailsPage(
     selectedRecipe: RecipeDetails,
     viewModel: RecipesViewModel
 ) {
+    val context = LocalContext.current
+
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
@@ -140,6 +144,7 @@ fun DetailsPage(
                         )
                     )
                     viewModel.insertGroceryItem(groceryEntity)
+                    Toast.makeText(context, "Added to grocery list", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
