@@ -17,6 +17,9 @@ interface FoodRecipesApi {
         @QueryMap searchQuery: Map<String, String>
     ): Response<FoodRecipe>
 
+    @GET("/recipes/random")
+    suspend fun getRandomRecipes(): Response<FoodRecipe>
+
 //    @GET("food/jokes/random")
 //    suspend fun getFoodJoke(
 //        @Query("apiKey") apiKey: String

@@ -1,10 +1,9 @@
 package com.example.mycookbook.presentation.details
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
@@ -12,10 +11,13 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.mycookbook.data.model.RecipeDetails
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,11 +45,19 @@ fun DetailsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Image(
-                painter = painterResource(id = selectedRecipe.foodImage),
-                contentDescription = "Background Image",
+
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(selectedRecipe.image)
+                    .crossfade(true)
+                    .build(),
+//                placeholder = painterResource(id = R.drawable.ic_placeholder), // Add your placeholder
+//                error = painterResource(id = R.drawable.ic_error), // Add your error image
+                contentDescription = selectedRecipe.title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             )
         }
     }

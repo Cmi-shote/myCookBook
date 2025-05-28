@@ -1,56 +1,104 @@
 package com.example.mycookbook.presentation.recipes
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.LocalDining
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mycookbook.R
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.mycookbook.data.model.RecipeDetails
-import com.example.mycookbook.data.model.Trending
+import com.example.mycookbook.presentation.utils.ErrorScreen
+import com.example.mycookbook.presentation.utils.ShimmerLoadingScreen
+import com.example.mycookbook.util.NetworkResult
+import java.util.Locale
 
 @Composable
 fun RecipesScreen(
     modifier: Modifier = Modifier,
-    recipeDetails: List<RecipeDetails>,
-    trending: List<Trending>,
+//    trending: List<Trending>,
     onRecipeClick: (RecipeDetails) -> Unit,
+    viewModel: RecipesViewModel
 ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = "Recipes",
-                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            RecipeCardRow(recipeDetails = recipeDetails, onRecipeClick = onRecipeClick)
-            Spacer(modifier = Modifier.height(24.dp))
-            TrendingNowSection(trending)
+    val recipes by viewModel.recipes.collectAsState()
+    val popularRecipes by viewModel.popularRecipes.collectAsState()
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        when (recipes) {
+            is NetworkResult.Loading -> {
+                ShimmerLoadingScreen()
+            }
+
+            is NetworkResult.Success -> {
+                recipes.data?.results.let { recipe ->
+                    Column(
+                        modifier = modifier
+                            .fillMaxSize()
+                    ) {
+                        Text(
+                            text = "Recipes",
+                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        if (recipe != null) {
+                            RecipeCardRow(recipeDetails = recipe, onRecipeClick = onRecipeClick)
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+                        TrendingNowSection(popularRecipes.results, onRecipeClick = onRecipeClick)
+                    }
+                } ?: ErrorScreen(message = "No ")
+            }
+
+            is NetworkResult.Error -> {
+                ErrorScreen(message = "An error occurred")
+            }
         }
+    }
 }
 
 @Composable
@@ -66,6 +114,7 @@ fun RecipeCardRow(recipeDetails: List<RecipeDetails>, onRecipeClick: (RecipeDeta
 
 @Composable
 fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit) {
+    var isFavorite by remember { mutableStateOf(false) }
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
@@ -79,44 +128,132 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            Image(
-                painter = painterResource(id = data.foodImage),
-                contentDescription = data.title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            )
+            Box {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(data.image)
+                        .crossfade(true)
+                        .build(),
+//                    placeholder = painterResource(id = R.drawable.ic_placeholder), // Add your placeholder
+//                    error = painterResource(id = R.drawable.ic_error), // Add your error image
+                    contentDescription = data.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                )
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = data.title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = 8.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
+
             Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = data.time, fontSize = 12.sp, color = Color(0xFF7CA86E))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = data.servings + "servings", fontSize = 12.sp, color = Color.Gray)
+                // Time icon and text
+                Icon(
+                    imageVector = Icons.Default.AccessTime,
+                    contentDescription = "Cook time",
+                    tint = Color(0xFF7CA86E),
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${data.readyInMinutes} mins",
+                    fontSize = 12.sp,
+                    color = Color(0xFF7CA86E)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Servings icon and text
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Servings",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${data.servings} servings",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
             }
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = data.mealType,
-                fontSize = 12.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Dish type icon
+                    Icon(
+                        imageVector = Icons.Default.Restaurant,
+                        contentDescription = "Dish type",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = data.dishTypes.take(2).joinToString(", ") {
+                            it.replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase(
+                                    Locale.ROOT
+                                ) else it.toString()
+                            }
+                        },
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        // Toggle favorite state
+                        isFavorite = !isFavorite
+
+                        // Save to database
+                        if (isFavorite) {
+                            // Add to favorites in database
+                            // Example: favoriteRepository.addToFavorites(itemId)
+                        } else {
+                            // Remove from favorites in database
+                            // Example: favoriteRepository.removeFromFavorites(itemId)
+                        }
+                    },
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                        tint = if (isFavorite) Color.Red else Color.Gray,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-fun TrendingNowSection(trending: List<Trending>) {
+fun TrendingNowSection(trending: List<RecipeDetails>, onRecipeClick: (RecipeDetails) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -130,40 +267,51 @@ fun TrendingNowSection(trending: List<Trending>) {
             Text(text = "View all", color = Color(0xFF7CA86E))
         }
     }
-    TrendingNowRow(trending)
-}
-
-@Composable
-fun TrendingNowRow(data: List<Trending>) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(data) { item ->
-            TrendingCard(item)
+        items(trending) { item ->
+            TrendingCard(item, onRecipeClick = onRecipeClick)
         }
     }
 }
 
 @Composable
-fun TrendingCard(data: Trending) {
-    Card {
+fun TrendingCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit) {
+    Card(modifier = Modifier.clickable {
+        onRecipeClick(data)
+    }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(120.dp).padding(10.dp)
+            modifier = Modifier
+                .width(120.dp)
+                .padding(10.dp)
         ) {
-            Image(
-                painter = painterResource(id = data.imageRes),
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(data.image)
+                    .crossfade(true)
+                    .build(),
+//                placeholder = painterResource(id = R.drawable.ic_placeholder), // Add your placeholder
+//                error = painterResource(id = R.drawable.ic_error), // Add your error image
                 contentDescription = data.title,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .size(90.dp)
                     .clip(CircleShape)
-                    .background(Color.White),
-                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = data.title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            Text(text = data.type, fontSize = 12.sp, color = Color.Gray)
-            Text(text = data.time, fontSize = 12.sp, color = Color.Gray)
+            Text(text = data.title, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 3, textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis)
+            Text(text = data.dishTypes.take(2).joinToString(", ") {
+                it.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.ROOT
+                    ) else it.toString()
+                }
+            }, fontSize = 12.sp, color = Color.Gray)
+            Text(text = data.readyInMinutes.toString() + " mins", fontSize = 12.sp, color = Color.Gray)
         }
     }
 }

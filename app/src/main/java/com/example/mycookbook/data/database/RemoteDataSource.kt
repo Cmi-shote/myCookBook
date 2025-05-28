@@ -16,6 +16,10 @@ class RemoteDataSource (
         return foodRecipesApi.searchRecipes(searchQuery)
     }
 
+    suspend fun getRandomRecipes(): Response<FoodRecipe> {
+        return foodRecipesApi.getRandomRecipes()
+    }
+
 //    suspend fun getFoodJoke(apiKey: String): Response<FoodJoke> {
 //        return foodRecipesApi.getFoodJoke(apiKey)
 //    }

@@ -19,9 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mycookbook.R
+import com.example.mycookbook.presentation.recipes.RecipesViewModel
 
 @Composable
-fun ExploreScreen(modifier: Modifier = Modifier) {
+fun ExploreScreen(modifier: Modifier = Modifier, viewModel: RecipesViewModel) {
     Column(
         modifier = modifier
             .fillMaxSize()

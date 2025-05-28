@@ -3,8 +3,10 @@ package com.example.mycookbook.data.model
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class ExtendedIngredient(
     @SerializedName("amount")
     val amount: Double,

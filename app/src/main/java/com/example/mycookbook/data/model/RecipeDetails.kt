@@ -1,45 +1,59 @@
 package com.example.mycookbook.data.model
 
+import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 import kotlinx.serialization.Serializable
 
+@Parcelize
 @Serializable
 data class RecipeDetails(
-    val foodImage: Int = 0,
-    val title: String = "",
-    val mealType: String = "",
-    val time: String = "",
-    val servings: String = "",
-    val nutritionInfo: List<NutritionalDetails> = arrayListOf(),
-    val ingredients: List<Ingredient> = arrayListOf(),
-    val directions: String = "",
-    val current: Int = 0
-)
+    @SerializedName("aggregateLikes")
+    val aggregateLikes: Int,
+    @SerializedName("cheap")
+    val cheap: Boolean,
+    @SerializedName("dairyFree")
+    val dairyFree: Boolean,
+    @SerializedName("extendedIngredients")
+    val extendedIngredients: @RawValue List<ExtendedIngredient>,
+    @SerializedName("glutenFree")
+    val glutenFree: Boolean,
+    @SerializedName("id")
+    val recipeId: Int,
+    @SerializedName("image")
+    val image: String,
+    @SerializedName("readyInMinutes")
+    val readyInMinutes: Int,
+    @SerializedName("cookingMinutes")
+    val cookingMinutes: Int,
+    @SerializedName("sourceName")
+    val sourceName: String?,
+    @SerializedName("sourceUrl")
+    val sourceUrl: String,
+    @SerializedName("summary")
+    val summary: String,
+    @SerializedName("title")
+    val title: String,
+    @SerializedName("vegan")
+    val vegan: Boolean,
+    @SerializedName("vegetarian")
+    val vegetarian: Boolean,
+    @SerializedName("veryHealthy")
+    val veryHealthy: Boolean,
+    @SerializedName("spoonacularScore")
+    val spoonacularScore: Float,
+    @SerializedName("dishTypes")
+    val dishTypes: List<String>,
+    @SerializedName("servings")
+    val servings: Int,
 
-@Serializable
-data class NutritionalDetails(
-    val type: String,
-    val value: String,
-    val progress: Float
-)
-
-@Serializable
-data class Ingredient(
-    val image: Int,
-    val name: String,
-    val quantity: String
-)
+): Parcelable
 
 data class Direction(
     val step: Int,
     val description: String,
     val totalSteps: Int
-)
-
-data class Trending(
-    val imageRes: Int,
-    val title: String,
-    val type: String,
-    val time: String
 )
 
 fun String.toDirectionList(): List<Direction> {

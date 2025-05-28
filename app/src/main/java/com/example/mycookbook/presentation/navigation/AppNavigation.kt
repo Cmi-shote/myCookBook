@@ -28,13 +28,15 @@ import com.example.mycookbook.presentation.grocery.GroceryScreen
 import com.example.mycookbook.presentation.ingredients.IngredientsChecklistScreen
 import com.example.mycookbook.presentation.landingPage.LandingPage
 import com.example.mycookbook.presentation.recipes.RecipesScreen
+import com.example.mycookbook.presentation.recipes.RecipesViewModel
 import com.example.mycookbook.presentation.splashScreen.SplashScreen
-import com.example.mycookbook.sampleRecipeDetails
-import com.example.mycookbook.trending
+import org.koin.androidx.compose.koinViewModel
 import kotlin.reflect.typeOf
 
 @Composable
-fun AppNavigation(navController: NavHostController, nextDestination: AppRoute) {
+fun AppNavigation(
+    navController: NavHostController, nextDestination: AppRoute) {
+    val viewModel: RecipesViewModel = koinViewModel()
     NavHost(
         navController = navController,
         startDestination = AppRoute.SplashScreen
@@ -59,13 +61,14 @@ fun AppNavigation(navController: NavHostController, nextDestination: AppRoute) {
 
         // Main Screen Container (handles all bottom nav screens internally)
         composable<AppRoute.MainWithBottomNav> {
-            MainScreenWithBottomNav(navController = navController)
+            MainScreenWithBottomNav(navController = navController, viewModel = viewModel)
         }
 
         // Recipe Details Screen (separate from bottom nav)
         composable<AppRoute.RecipeDetailsRoute>(
             typeMap = mapOf(
                 typeOf<RecipeDetails>() to CustomNavType(
+                    RecipeDetails::class,
                     RecipeDetails.serializer()
                 )
             )
@@ -76,7 +79,14 @@ fun AppNavigation(navController: NavHostController, nextDestination: AppRoute) {
             )
         }
 
-        composable<AppRoute.GroceryCheckListRoute> { backStackEntry ->
+        composable<AppRoute.GroceryCheckListRoute>(
+            typeMap = mapOf(
+                typeOf<RecipeDetails>() to CustomNavType(
+                    RecipeDetails::class,
+                    RecipeDetails.serializer()
+                )
+            )
+        ) { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.RecipeDetailsRoute>()
             IngredientsChecklistScreen(
                 selectedRecipe = args.selectedRecipe
@@ -87,7 +97,7 @@ fun AppNavigation(navController: NavHostController, nextDestination: AppRoute) {
 
 
 @Composable
-fun MainScreenWithBottomNav(navController: NavHostController) {
+fun MainScreenWithBottomNav(navController: NavHostController, viewModel: RecipesViewModel) {
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val navigationItems = listOf(
@@ -123,16 +133,18 @@ fun MainScreenWithBottomNav(navController: NavHostController) {
             0 -> {
                 RecipesScreen(
                     modifier = Modifier.padding(paddingValues),
-                    recipeDetails = sampleRecipeDetails,
-                    trending = trending,
+//                    recipeDetails = sampleRecipeDetails,
+//                    trending = trending,
                     onRecipeClick = { selectedRecipe ->
                         navController.navigate(AppRoute.RecipeDetailsRoute(selectedRecipe))
-                    }
+                    },
+                    viewModel = viewModel
                 )
             }
             1 -> {
                 ExploreScreen(
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
+                    viewModel = viewModel
                 )
             }
             2 -> {
@@ -140,7 +152,8 @@ fun MainScreenWithBottomNav(navController: NavHostController) {
                     modifier = Modifier.padding(paddingValues),
                     onItemClicked = { selectedRecipe ->
                         navController.navigate(AppRoute.GroceryCheckListRoute(selectedRecipe))
-                    }
+                    },
+                    viewModel = viewModel
                 )
             }
         }

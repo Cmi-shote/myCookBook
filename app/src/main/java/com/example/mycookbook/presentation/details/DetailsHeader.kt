@@ -1,5 +1,6 @@
 package com.example.mycookbook.presentation.details
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.utils.CounterButton
+import com.example.mycookbook.presentation.utils.getNutritionInfo
 
 @Composable
 fun DetailsHeader(
@@ -32,7 +34,7 @@ fun DetailsHeader(
 
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "${selectedRecipe.mealType} / ${selectedRecipe.time}",
+            text = "Breakfast / ${selectedRecipe.readyInMinutes} mins", //todo
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Light,
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -44,9 +46,32 @@ fun DetailsHeader(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxWidth()
         ) {
-            selectedRecipe.nutritionInfo.forEach { (label, value, progress) ->
-                NutritionInfoItem(label, value, progress)
-            }
+            val nutritionInfo = selectedRecipe.getNutritionInfo()
+
+            Log.d("NutritionInfo", nutritionInfo.toString())
+            // Extract numeric values for progress calculation
+            val proteinValue = nutritionInfo.protein.replace("g of protein", "").toFloatOrNull() ?: 0f
+            val fatValue = nutritionInfo.fat.replace("g of fat", "").toFloatOrNull() ?: 0f
+            val caloriesValue = nutritionInfo.calories.replace(" calories", "").toFloatOrNull() ?: 0
+            Log.d()
+
+            NutritionInfoItem(
+                label = "Protein",
+                value = nutritionInfo.protein.ifEmpty { "0" } + "g",
+                progress = ((proteinValue / 50f) * 100f).coerceAtMost(100f) // Assuming 50g daily goal
+            )
+
+            NutritionInfoItem(
+                label = "Fat",
+                value = nutritionInfo.fat.ifEmpty { "0" } + "g",
+                progress = (fatValue / 65f * 100f).coerceAtMost(100f) // Assuming 65g daily goal
+            )
+
+            NutritionInfoItem(
+                label = "Calories",
+                value = nutritionInfo.calories.ifEmpty { "0" } + "k",
+                progress = (caloriesValue / 2000f * 100f).coerceAtMost(100f) // Assuming 2000 cal daily goal
+            )
         }
 
         Spacer(modifier.height(16.dp))
