@@ -1,6 +1,5 @@
 package com.example.mycookbook.presentation.ingredients
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +19,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -35,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -100,83 +97,60 @@ fun Content(modifier: Modifier = Modifier, selectedRecipe: RecipeDetails) {
 
     val checkedCount = checkedState.count { it }
 
-    Column(
+    LazyColumn (
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White, shape = RectangleShape)
-            .padding(top = 140.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = selectedRecipe.title,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "$checkedCount / $ingredientsSize ingredients",
-                color = Color.Gray,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(start = 56.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Ingredients",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "$servings Serves",
-                    color = Color.Gray,
-                    fontSize = 15.sp
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFFF5F6FA))
-                ) {
-                    IconButton(
-                        onClick = { if (servings > 1) servings-- },
-                        enabled = servings > 1
-                    ) {
-                        Text("-", fontSize = 18.sp, color = Color.Black)
-                    }
-                    Text(servings.toString(), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    IconButton(onClick = { servings++ }) {
-                        Text("+", fontSize = 18.sp, color = Color.Black)
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider()
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(0.dp)
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                itemsIndexed(selectedRecipe.extendedIngredients) { index, item ->
-                    val checked = checkedState[index]
-                    IngredientChecklistRow(
-                        item = item,
-                        checked = checked,
-                        onCheckedChange = {
-                            checkedState =
-                                checkedState.toMutableList().also { it[index] = it[index].not() }
-                        }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = selectedRecipe.title,
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "$checkedCount / $ingredientsSize ingredients",
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Ingredients",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "$servings Serves",
+                        color = Color.Gray,
+                        fontSize = 15.sp
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider()
             }
         }
-    }
+
+            itemsIndexed(selectedRecipe.extendedIngredients) {  index, item ->
+                val checked = checkedState[index]
+                IngredientChecklistRow(
+                    item = item,
+                    checked = checked,
+                    onCheckedChange = {
+                        checkedState =
+                            checkedState.toMutableList().also { it[index] = it[index].not() }
+                    }
+                )
+            }
+        }
 }
 
 @Composable
@@ -190,7 +164,7 @@ fun IngredientChecklistRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onCheckedChange() }
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp, horizontal = 8.dp)
     ) {
         Checkbox(
             checked = checked,
@@ -205,7 +179,6 @@ fun IngredientChecklistRow(
             modifier = Modifier.weight(1f),
             style = TextStyle(
                 fontSize = 16.sp,
-                color = if (checked) Color.Gray else Color.Black,
                 textDecoration = if (checked) TextDecoration.LineThrough else null
             )
         )

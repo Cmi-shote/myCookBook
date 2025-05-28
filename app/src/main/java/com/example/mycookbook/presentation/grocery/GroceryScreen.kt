@@ -45,7 +45,7 @@ fun GroceryScreen(
     var selectedDay by remember { mutableStateOf(today) }
 
     val groceryList by viewModel.groceryList.collectAsStateWithLifecycle()
-    val filteredGroceryList = groceryList.filter { it.date == selectedDay.toString() }
+    val filteredGroceryList = groceryList.filter { it.result.date == selectedDay.toString() }
 
     Column(
         modifier = modifier
@@ -80,8 +80,8 @@ fun GroceryScreen(
             ) {
                 items(filteredGroceryList) { grocery ->
                     GroceryItemCard(
-                        grocery = grocery,
-                        onItemClicked = { onItemClicked(grocery) }
+                        grocery = grocery.result,
+                        onItemClicked = { onItemClicked(grocery.result) }
                     )
                 }
             }

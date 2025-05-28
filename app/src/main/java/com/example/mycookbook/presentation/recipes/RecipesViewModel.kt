@@ -60,8 +60,8 @@ class RecipesViewModel(
     private val _popularRecipes = MutableStateFlow(FoodRecipe(emptyList()))
     val popularRecipes: StateFlow<FoodRecipe> = _popularRecipes.asStateFlow()
 
-    private val _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
-    val groceryList: StateFlow<List<Grocery>> = _groceryList.asStateFlow()
+    private val _groceryList = MutableStateFlow<List<GroceryEntity>>(emptyList())
+    val groceryList: StateFlow<List<GroceryEntity>> = _groceryList.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -74,6 +74,13 @@ class RecipesViewModel(
         viewModelScope.launch {
             repository.local.readFavoriteRecipes().collect { favorites ->
                 _favoriteRecipes.value = favorites
+            }
+        }
+
+        // observe grocery list
+        viewModelScope.launch {
+            repository.local.readGroceryList().collect { groceryList ->
+                _groceryList.value = groceryList
             }
         }
 
