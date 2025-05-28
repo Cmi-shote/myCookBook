@@ -91,25 +91,33 @@ fun DetailsPage(
         item {
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Replace your ButtonGroup section in DetailsPage with this:
+
             ButtonGroup(
                 modifier = Modifier.fillMaxWidth(),
-                buttonLabelOne = if (isFavorite) "Remove from Favorites" else "Add to Favorites",
-                buttonLabelTwo = "Cook This Dish",
-                buttonActionOne = {
+                buttonLabelTwo = "Cook Dish",
+                onFavoriteToggle = {
+                    // Update UI state immediately
+                    isFavorite = !isFavorite
+
+                    // Then perform database operation in background
                     if (isFavorite) {
-                        // Remove from favorites
-                        viewModel.deleteFavoriteRecipe(selectedRecipe.recipeId)
-                    } else {
                         // Add to favorites
                         val favoritesEntity = FavoritesEntity(
                             id = 0,
                             result = selectedRecipe
                         )
                         viewModel.insertFavoriteRecipe(favoritesEntity)
+                        Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Remove from favorites
+                        viewModel.deleteFavoriteRecipe(selectedRecipe.recipeId)
+                        Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
                     }
                 },
                 buttonActionTwo = {},
-                shouldTrailingIconTwoShow = true
+                shouldTrailingIconTwoShow = true,
+                isFavorite = isFavorite
             )
         }
 
