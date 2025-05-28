@@ -1,5 +1,7 @@
 package com.example.mycookbook.presentation.details
 
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ProgressIndicatorDefaults
@@ -24,8 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mycookbook.data.model.RecipeDetails
-import com.example.mycookbook.data.model.toDirectionList
 import com.example.mycookbook.presentation.utils.ButtonGroup
+import com.example.mycookbook.presentation.utils.formatRecipeSummary
 
 @Composable
 fun DetailsPage(
@@ -39,6 +42,72 @@ fun DetailsPage(
     ) {
         item {
             DetailsHeader(selectedRecipe = selectedRecipe)
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row {
+                Text(
+                    text = "Summary", //todo: add to string file
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ListItem(
+                headlineContent = {},
+                supportingContent = {
+                    Log.d("DetailsPage", "Summary: ${selectedRecipe.summary.formatRecipeSummary()}")
+                    Text(text = selectedRecipe.summary.formatRecipeSummary())
+                },
+                modifier = modifier
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ButtonGroup(
+                modifier = Modifier.fillMaxWidth(),
+                buttonLabelOne = "Save", //todo: move tp string res
+                buttonLabelTwo = "Cook This Dish",
+                buttonActionOne = {},
+                buttonActionTwo = {},
+                shouldTrailingIconTwoShow = true
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row {
+                    Text(
+                        text = "Ingredients",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = selectedRecipe.servings.toString() + " serves",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         items(selectedRecipe.extendedIngredients) { ingredient ->
@@ -61,42 +130,11 @@ fun DetailsPage(
             }
         }
 
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
+//        items(selectedRecipe.summary.toDirectionList()) { direction ->
+//
+//            Directions(direction = direction)
+//        }
 
-            Row {
-                Text(
-                    text = "Directions", //todo: add to string file
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = "${selectedRecipe.summary.toDirectionList().size} steps" ,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Light,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
-        }
-
-        items(selectedRecipe.summary.toDirectionList()) { direction ->
-
-            Directions(direction = direction)
-        }
-
-        item {
-            ButtonGroup(
-                modifier = Modifier.fillMaxWidth(),
-                buttonLabelOne = "Save", //todo: move tp string res
-                buttonLabelTwo = "Cook This Dish",
-                buttonActionOne = {},
-                buttonActionTwo = {},
-                shouldTrailingIconTwoShow = true
-            )
-        }
     }
 }
 

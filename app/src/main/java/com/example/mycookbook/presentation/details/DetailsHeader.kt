@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mycookbook.data.model.RecipeDetails
-import com.example.mycookbook.presentation.utils.CounterButton
 import com.example.mycookbook.presentation.utils.getNutritionInfo
 import java.util.Locale
 
@@ -77,34 +76,5 @@ fun DetailsHeader(
                 progress = (caloriesValue / 2000f * 100f).coerceAtMost(100f) // Assuming 2000 cal daily goal
             )
         }
-
-        Spacer(modifier.height(16.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row {
-                Text(
-                    text = "Ingredients",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = selectedRecipe.servings.toString() + " serves",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Light,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
-
-            CounterButton()
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
     }
 }
