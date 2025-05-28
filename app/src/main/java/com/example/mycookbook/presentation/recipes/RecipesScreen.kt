@@ -1,6 +1,5 @@
 package com.example.mycookbook.presentation.recipes
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,27 +12,29 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.mycookbook.data.database.entities.FavoritesEntity
 import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.utils.ErrorScreen
 import com.example.mycookbook.presentation.utils.ShimmerLoadingScreen
@@ -129,10 +129,12 @@ fun RecipeCardRow(recipeDetails: List<RecipeDetails>, onRecipeClick: (RecipeDeta
 
 @Composable
 fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, viewModel: RecipesViewModel, modifier: Modifier = Modifier) {
-    val favoriteRecipes by viewModel.favoriteRecipes.collectAsState()
-    val isFavorite = favoriteRecipes.any { it.result.recipeId == data.recipeId }
-    val context = LocalContext.current
+    var isFavorite by remember { mutableStateOf(false) }
 
+    LaunchedEffect(data.recipeId) {
+        isFavorite = viewModel.isFavorite(data.recipeId)
+    }
+    
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
@@ -208,8 +210,9 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, view
 
             Spacer(modifier = Modifier.height(4.dp))
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -236,33 +239,14 @@ fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, view
                     )
                 }
 
-                IconButton(
-                    onClick = {
-                        if (isFavorite) {
-                            // Remove from favorites
-                            val favoritesEntity = FavoritesEntity(
-                                id = 0,
-                                result = data
-                            )
-                            viewModel.deleteFavoriteRecipe(favoritesEntity)
-                            Toast.makeText(context, "Recipe removed from favorites", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // Add to favorites
-                            val favoritesEntity = FavoritesEntity(
-                                id = 0,
-                                result = data
-                            )
-                            viewModel.insertFavoriteRecipe(favoritesEntity)
-                            Toast.makeText(context, "Recipe added to favorites", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier.padding(8.dp)
-                ) {
+                if (isFavorite) {
                     Icon(
-                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) Color.Red else Color.Gray,
-                        modifier = Modifier.size(25.dp)
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = "Favorite recipe",
+                        tint = Color.Red,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(25.dp)
                     )
                 }
             }

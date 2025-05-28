@@ -226,9 +226,15 @@ class RecipesViewModel(
             repository.local.insertGroceryList(groceryEntity)
         }
 
-    fun deleteFavoriteRecipe(favoritesEntity: FavoritesEntity) =
+    private fun getFavoriteEntity(recipeId: Int): FavoritesEntity? {
+        return favoriteRecipes.value.find { it.result.recipeId == recipeId }
+    }
+
+    fun deleteFavoriteRecipe(recipeId: Int) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.deleteFavoriteRecipe(favoritesEntity)
+            getFavoriteEntity(recipeId)?.let { favoritesEntity ->
+                repository.local.deleteFavoriteRecipe(favoritesEntity)
+            }
         }
 
     fun deleteGroceryItem(groceryEntity: GroceryEntity) =
@@ -238,4 +244,8 @@ class RecipesViewModel(
                 Toast.makeText(context, "Item removed from grocery list", Toast.LENGTH_SHORT).show()
             }
         }
+
+    fun isFavorite(recipeId: Int): Boolean {
+        return favoriteRecipes.value.any { it.result.recipeId == recipeId }
+    }
 }
