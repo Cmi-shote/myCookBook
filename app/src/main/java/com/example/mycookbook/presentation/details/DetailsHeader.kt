@@ -1,6 +1,5 @@
 package com.example.mycookbook.presentation.details
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.utils.CounterButton
 import com.example.mycookbook.presentation.utils.getNutritionInfo
+import java.util.Locale
 
 @Composable
 fun DetailsHeader(
@@ -34,7 +34,13 @@ fun DetailsHeader(
 
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Breakfast / ${selectedRecipe.readyInMinutes} mins", //todo
+            text = "${selectedRecipe.dishTypes.take(2).joinToString(", ") {
+                it.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.ROOT
+                    ) else it.toString()
+                }
+            }} / ${selectedRecipe.readyInMinutes} mins", //todo
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Light,
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -48,12 +54,10 @@ fun DetailsHeader(
         ) {
             val nutritionInfo = selectedRecipe.getNutritionInfo()
 
-            Log.d("NutritionInfo", nutritionInfo.toString())
             // Extract numeric values for progress calculation
             val proteinValue = nutritionInfo.protein.replace("g of protein", "").toFloatOrNull() ?: 0f
             val fatValue = nutritionInfo.fat.replace("g of fat", "").toFloatOrNull() ?: 0f
-            val caloriesValue = nutritionInfo.calories.replace(" calories", "").toFloatOrNull() ?: 0
-            Log.d()
+            val caloriesValue = nutritionInfo.calories.replace(" calories", "").toFloatOrNull() ?: 0f
 
             NutritionInfoItem(
                 label = "Protein",
@@ -90,7 +94,7 @@ fun DetailsHeader(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "4 serves",
+                    text = selectedRecipe.servings.toString() + " serves",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Light,
                     modifier = Modifier.align(Alignment.CenterVertically)

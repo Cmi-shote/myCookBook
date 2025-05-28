@@ -1,8 +1,7 @@
 package com.example.mycookbook.presentation.details
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -10,16 +9,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.mycookbook.R
 import com.example.mycookbook.data.model.ExtendedIngredient
 
 @Composable
 fun Ingredients(
     ingredient: ExtendedIngredient,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    servings: Int = 1
 ) {
     ListItem(
         headlineContent = {
@@ -28,17 +30,16 @@ fun Ingredients(
         leadingContent = {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(ingredient.image)
+                    .data("https://img.spoonacular.com/ingredients_100x100/${ingredient.image}")
                     .crossfade(true)
                     .build(),
-//                placeholder = painterResource(id = R.drawable.ic_placeholder), // Add your placeholder
-//                error = painterResource(id = R.drawable.ic_error), // Add your error image
+                placeholder = painterResource(id = R.drawable.images), // Add your placeholder
+                error = painterResource(id = R.drawable.images), // Add your error image
                 contentDescription = ingredient.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .size(40.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    .clip(CircleShape)
             )
         },
         trailingContent = {
