@@ -68,15 +68,15 @@ fun LandingPage(
                 when (page) {
                     0 -> OnboardingPage(
                         title = "Welcome to My CookBook",
-                        description = "Cook new dishes, share them with friends, make your loved ones happy!"
+                        description = "Your personal recipe companion for discovering, saving, and cooking delicious meals"
                     )
                     1 -> OnboardingPage(
-                        title = "Learn to Cook Easily",
-                        description = "Step-by-step recipes and video tutorials to help you master the art of cooking"
+                        title = "Discover & Save Recipes",
+                        description = "Browse trending recipes, search for your favorites, and save them for later"
                     )
                     2 -> OnboardingPage(
-                        title = "Join Our Community",
-                        description = "Connect with other food lovers and share your culinary journey",
+                        title = "Plan Your Meals",
+                        description = "Create grocery lists, track ingredients, and follow step-by-step cooking instructions",
                         showButton = true,
                         onButtonClick = {
                             scope.launch {
