@@ -21,12 +21,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +42,10 @@ import androidx.media3.ui.PlayerView
 import com.example.mycookbook.R
 import com.example.mycookbook.presentation.utils.UserPreferences
 import kotlinx.coroutines.launch
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 @Composable
 fun LandingPage(
@@ -52,7 +58,7 @@ fun LandingPage(
     val userPreferences = remember { UserPreferences(context) }
 
     Box(modifier = modifier.fillMaxSize()) {
-        VideoBackground()
+        ImageBackground()
 
         Column(
             modifier = modifier
@@ -148,45 +154,25 @@ private fun OnboardingPage(
     }
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
-fun VideoBackground() {
-    val context = LocalContext.current
-
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            val mediaItem = MediaItem.fromUri(
-                Uri.parse("android.resource://${context.packageName}/${R.raw.food}")
-            )
-            setMediaItem(mediaItem)
-            prepare()
-            playWhenReady = true
-            repeatMode = ExoPlayer.REPEAT_MODE_ALL
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            exoPlayer.release()
-        }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        AndroidView(
-            factory = { context ->
-                PlayerView(context).apply {
-                    player = exoPlayer
-                    useController = false
-                    resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                    layoutParams = android.widget.FrameLayout.LayoutParams(
-                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
-                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT
-                    ).apply {
-                        gravity = android.view.Gravity.CENTER
-                    }
-                }
-            },
-            modifier = Modifier.fillMaxSize()
+fun ImageBackground() {
+    var isLoading by remember { mutableStateOf(true) }
+    
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF1A1A1A)) // Dark gray background instead of pure black
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(R.drawable.breakfast2)
+                .crossfade(true)
+                .build(),
+            contentDescription = "Background Image",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+            onLoading = { isLoading = true },
+            onSuccess = { isLoading = false }
         )
     }
 }
