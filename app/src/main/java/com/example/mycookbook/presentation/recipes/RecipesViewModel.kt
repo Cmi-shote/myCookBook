@@ -10,6 +10,7 @@ import com.example.mycookbook.data.database.Repository
 import com.example.mycookbook.data.database.entities.FavoritesEntity
 import com.example.mycookbook.data.database.entities.GroceryEntity
 import com.example.mycookbook.data.database.entities.RecipesEntity
+import com.example.mycookbook.data.model.ExtendedIngredient
 import com.example.mycookbook.data.model.FoodRecipe
 import com.example.mycookbook.data.model.toFoodRecipe
 import com.example.mycookbook.presentation.utils.handleFoodRecipesResponse
@@ -268,6 +269,21 @@ class RecipesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val groceryEntity = groceryList.value.find { it.result.recipeDetails.recipeId == recipeId }
             groceryEntity?.let { repository.local.deleteGroceryItem(it) }
+        }
+
+    fun updateGroceryItemCurrent(recipeId: Int, current: Int, ingredients: List<ExtendedIngredient>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            val groceryEntity = groceryList.value.find { it.result.recipeDetails.recipeId == recipeId }
+            groceryEntity?.let {
+                val updatedRecipeDetails = it.result.recipeDetails.copy(
+                    extendedIngredients = ingredients
+                )
+                val updatedGrocery = it.result.copy(
+                    current = current,
+                    recipeDetails = updatedRecipeDetails
+                )
+                repository.local.insertGroceryList(GroceryEntity(it.id, updatedGrocery))
+            }
         }
 
     fun isFavorite(recipeId: Int): Boolean {

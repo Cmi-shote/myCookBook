@@ -19,5 +19,6 @@ data class ExtendedIngredient(
     @SerializedName("original")
     val original: String,
     @SerializedName("unit")
-    val unit: String
+    val unit: String,
+    var checked: Boolean = false
 ): Parcelable

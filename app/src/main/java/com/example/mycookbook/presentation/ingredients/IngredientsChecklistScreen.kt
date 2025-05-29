@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,22 +53,33 @@ import com.example.mycookbook.presentation.components.CustomTopBar
 @Composable
 fun IngredientsChecklistScreen(
     modifier: Modifier = Modifier,
-    onBack: () -> Unit = {},
-    onDelete: (Grocery) -> Unit = {},
+    onBack: (Grocery, Int, List<ExtendedIngredient>) -> Unit,
+    onDelete: (Grocery) -> Unit,
     selectedGrocery: Grocery
 ) {
     val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp // Get the device screen height
+    val screenHeight = configuration.screenHeightDp.dp
     val sheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.PartiallyExpanded,
         skipHiddenState = true
     )
     val context = LocalContext.current
+    var currentCheckedCount by remember { mutableStateOf(selectedGrocery.current) }
+    var currentIngredients by remember { mutableStateOf(selectedGrocery.recipeDetails.extendedIngredients) }
+
     BottomSheetScaffold(
         scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState),
-        sheetPeekHeight = screenHeight / 2, // Set peek height to half of the screen
+        sheetPeekHeight = screenHeight / 2,
         sheetContent = {
-            Content(selectedRecipe = selectedGrocery.recipeDetails)
+            Content(
+                selectedRecipe = selectedGrocery.recipeDetails,
+                onCheckedCountChange = { count ->
+                    currentCheckedCount = count
+                },
+                onIngredientsChange = { ingredients ->
+                    currentIngredients = ingredients
+                }
+            )
         }
     ) { paddingValues ->
         Box(
@@ -80,8 +92,6 @@ fun IngredientsChecklistScreen(
                     .data(selectedGrocery.recipeDetails.image)
                     .crossfade(true)
                     .build(),
-//                placeholder = painterResource(id = R.drawable.ic_placeholder), // Add your placeholder
-//                error = painterResource(id = R.drawable.ic_error), // Add your error image
                 contentDescription = selectedGrocery.recipeDetails.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -89,7 +99,9 @@ fun IngredientsChecklistScreen(
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             )
             CustomTopBar(
-                onBackPressed = onBack,
+                onBackPressed = {
+                    onBack(selectedGrocery, currentCheckedCount, currentIngredients)
+                },
                 shouldOptionsShow = true,
                 onDeleteClicked = {
                     onDelete(selectedGrocery)
@@ -101,14 +113,40 @@ fun IngredientsChecklistScreen(
 }
 
 @Composable
-fun Content(modifier: Modifier = Modifier, selectedRecipe: RecipeDetails) {
+fun Content(
+    modifier: Modifier = Modifier,
+    selectedRecipe: RecipeDetails,
+    onCheckedCountChange: (Int) -> Unit,
+    onIngredientsChange: (List<ExtendedIngredient>) -> Unit
+) {
     var servings by remember { mutableStateOf(4) }
     val ingredientsSize = selectedRecipe.extendedIngredients.size
-    var checkedState by remember { mutableStateOf(List(ingredientsSize) { false }) }
+    var checkedState by remember { 
+        mutableStateOf(selectedRecipe.extendedIngredients.map { it.checked }) 
+    }
+
+    // Initialize checked count when first loaded
+    LaunchedEffect(Unit) {
+        val initialCheckedCount = selectedRecipe.extendedIngredients.count { it.checked }
+        onCheckedCountChange(initialCheckedCount)
+    }
 
     val checkedCount = checkedState.count { it }
 
-    LazyColumn (
+    // Update parent when checked count changes
+    LaunchedEffect(checkedCount) {
+        onCheckedCountChange(checkedCount)
+    }
+
+    // Update parent when ingredients change
+    LaunchedEffect(checkedState) {
+        val updatedIngredients = selectedRecipe.extendedIngredients.mapIndexed { index, ingredient ->
+            ingredient.copy(checked = checkedState[index])
+        }
+        onIngredientsChange(updatedIngredients)
+    }
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
     ) {
@@ -150,18 +188,21 @@ fun Content(modifier: Modifier = Modifier, selectedRecipe: RecipeDetails) {
             }
         }
 
-            itemsIndexed(selectedRecipe.extendedIngredients) {  index, item ->
-                val checked = checkedState[index]
-                IngredientChecklistRow(
-                    item = item,
-                    checked = checked,
-                    onCheckedChange = {
-                        checkedState =
-                            checkedState.toMutableList().also { it[index] = it[index].not() }
+        itemsIndexed(selectedRecipe.extendedIngredients) { index, item ->
+            val checked = checkedState[index]
+            IngredientChecklistRow(
+                item = item,
+                checked = checked,
+                onCheckedChange = {
+                    checkedState = checkedState.toMutableList().also { 
+                        it[index] = it[index].not()
+                        // Update the ingredient's checked property
+                        item.checked = it[index]
                     }
-                )
-            }
+                }
+            )
         }
+    }
 }
 
 @Composable

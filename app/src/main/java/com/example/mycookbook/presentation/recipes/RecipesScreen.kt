@@ -1,8 +1,5 @@
 package com.example.mycookbook.presentation.recipes
 
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -123,6 +120,7 @@ fun RecipesScreen(
                                     onRecipeClick = onRecipeClick,
                                     viewModel = viewModel
                                 )
+                                Spacer(modifier = Modifier.height(24.dp))
                             }
                         }
                     }
@@ -299,9 +297,9 @@ fun TrendingNowSection(trending: List<RecipeDetails>, onRecipeClick: (RecipeDeta
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.weight(1f)
         )
-        TextButton(onClick = { /* TODO: View all trending */ }) {
-            Text(text = "View all", color = Color(0xFF7CA86E))
-        }
+//        TextButton(onClick = { /* TODO: View all trending */ }) {
+//            Text(text = "View all", color = Color(0xFF7CA86E))
+//        }
     }
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp)

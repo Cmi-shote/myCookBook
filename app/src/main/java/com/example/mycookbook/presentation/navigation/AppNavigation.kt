@@ -96,7 +96,9 @@ fun AppNavigation(
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.GroceryCheckListRoute>()
             IngredientsChecklistScreen(
-                selectedGrocery = args.selectedGrocery, onBack = {
+                selectedGrocery = args.selectedGrocery,
+                onBack = { grocery, currentCheckedCount, ingredients ->
+                    viewModel.updateGroceryItemCurrent(grocery.recipeDetails.recipeId, currentCheckedCount, ingredients)
                     navController.popBackStack()
                 },
                 onDelete = { grocery ->
