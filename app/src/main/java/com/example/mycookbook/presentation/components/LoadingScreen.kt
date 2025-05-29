@@ -1,4 +1,4 @@
-package com.example.mycookbook.presentation.utils
+package com.example.mycookbook.presentation.components
 
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.FastOutSlowInEasing

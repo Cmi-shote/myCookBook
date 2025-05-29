@@ -1,4 +1,4 @@
-package com.example.mycookbook.presentation.utils
+package com.example.mycookbook.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
