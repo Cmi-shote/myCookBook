@@ -167,41 +167,50 @@ class RecipesViewModel(
             try {
                 val response = repository.remote.getRecipes(queries)
                 val result = handleFoodRecipesResponse(response)
-                _recipes.value = result
 
-                val popularRecipesList = result.data?.results?.filter { recipe ->
-                    recipe.aggregateLikes > 1000
-                } ?: emptyList()
+                if (result is NetworkResult.Success) {
+                    _recipes.value = result
 
-                _popularRecipes.value = FoodRecipe(popularRecipesList)
+                    val popularRecipesList = result.data?.results?.filter { recipe ->
+                        recipe.aggregateLikes > 1000
+                    } ?: emptyList()
 
-                // Cache successful responses
-                result.data?.let { foodRecipe ->
-                    offlineCacheRecipes(foodRecipe)
+                    _popularRecipes.value = FoodRecipe(popularRecipesList)
+
+                    // Cache successful responses
+                    result.data?.let { foodRecipe ->
+                        offlineCacheRecipes(foodRecipe)
+                    }
+                } else {
+                    // API error - try cache, fallback to original error
+                    tryLoadFromCache(result)
                 }
             } catch (e: Exception) {
-                _recipes.value = NetworkResult.Error("Recipes not found.")
+                // Network exception - try cache, fallback to generic error
+                tryLoadFromCache(NetworkResult.Error("Recipes not found."))
             }
         } else {
-            // No internet connection - try to load from cache
-            try {
-                val cachedRecipes = getCachedRecipes()
-                if (cachedRecipes != null && cachedRecipes.results.isNotEmpty()) {
-                    _recipes.value = NetworkResult.Success(cachedRecipes)
+            // No internet - try cache, fallback to no internet error
+            tryLoadFromCache(NetworkResult.Error("No Internet Connection."))
+        }
+    }
 
-                    // Also populate popular recipes from cache
-                    val popularRecipesList = cachedRecipes.results.filter { recipe ->
-                        recipe.aggregateLikes > 1000
-                    }
-                    _popularRecipes.value = FoodRecipe(popularRecipesList)
-                } else {
-                    // Only show error if there's no cache AND no internet (first time user)
-                    _recipes.value = NetworkResult.Error("No Internet Connection.")
+    private suspend fun tryLoadFromCache(fallbackError: NetworkResult<FoodRecipe>) {
+        try {
+            val cachedRecipes = getCachedRecipes()
+            if (cachedRecipes != null && cachedRecipes.results.isNotEmpty()) {
+                _recipes.value = NetworkResult.Success(cachedRecipes)
+
+                // Also populate popular recipes from cache
+                val popularRecipesList = cachedRecipes.results.filter { recipe ->
+                    recipe.aggregateLikes > 1000
                 }
-            } catch (e: Exception) {
-                // Error reading from cache, show no internet error
-                _recipes.value = NetworkResult.Error("No Internet Connection.")
+                _popularRecipes.value = FoodRecipe(popularRecipesList)
+            } else {
+                _recipes.value = fallbackError
             }
+        } catch (e: Exception) {
+            _recipes.value = fallbackError
         }
     }
 
