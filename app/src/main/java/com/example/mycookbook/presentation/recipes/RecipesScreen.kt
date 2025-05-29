@@ -1,5 +1,8 @@
 package com.example.mycookbook.presentation.recipes
 
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +54,7 @@ import coil.request.ImageRequest
 import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.components.ErrorScreen
 import com.example.mycookbook.presentation.components.ShimmerLoadingScreen
+import com.example.mycookbook.presentation.utils.hasInternetConnection
 import com.example.mycookbook.util.NetworkResult
 import java.util.Locale
 
@@ -63,13 +67,23 @@ fun RecipesScreen(
     val recipes by viewModel.recipes.collectAsState()
     val favoriteRecipes by viewModel.favoriteRecipes.collectAsState()
     val popularRecipes by viewModel.popularRecipes.collectAsState()
+    val context = LocalContext.current
 
     Box(
         modifier = modifier.fillMaxSize()
     ) {
         when (recipes) {
             is NetworkResult.Loading -> {
-                ShimmerLoadingScreen()
+                if (hasInternetConnection(context)) {
+                    ShimmerLoadingScreen()
+                } else {
+                    ErrorScreen(
+                        message = "No Internet Connection",
+                        onRetryClick = {
+                            viewModel.getRecipes(viewModel.applyQueries())
+                        }
+                    )
+                }
             }
 
             is NetworkResult.Success -> {
@@ -109,7 +123,14 @@ fun RecipesScreen(
             }
 
             is NetworkResult.Error -> {
-                ErrorScreen(message = "An error occurred")
+                ErrorScreen(
+                    message = (recipes as NetworkResult.Error).message ?: "An error occurred",
+                    onRetryClick = {
+//                        if (hasInternetConnection(context)) {
+                            viewModel.getRecipes(viewModel.applyQueries())
+//                        }
+                    }
+                )
             }
         }
     }
