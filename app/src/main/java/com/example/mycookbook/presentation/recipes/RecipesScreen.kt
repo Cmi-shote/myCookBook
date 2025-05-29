@@ -65,9 +65,7 @@ fun RecipesScreen(
     val popularRecipes by viewModel.popularRecipes.collectAsState()
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
+        modifier = modifier.fillMaxSize()
     ) {
         when (recipes) {
             is NetworkResult.Loading -> {
@@ -77,8 +75,9 @@ fun RecipesScreen(
             is NetworkResult.Success -> {
                 recipes.data?.results.let { recipe ->
                     LazyColumn(
-                        modifier = modifier
+                        modifier = Modifier
                             .fillMaxSize()
+                            .padding(horizontal = 16.dp)
                     ) {
                         item {
                             if (recipe != null) {
@@ -95,7 +94,7 @@ fun RecipesScreen(
                             if (favoriteRecipes.isNotEmpty()) {
                                 Text(
                                     text = "Favorite Recipes",
-                                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 RecipeCardRow(
@@ -312,7 +311,7 @@ fun TrendingCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit) {
                         Locale.ROOT
                     ) else it.toString()
                 }
-            }, fontSize = 12.sp, color = Color.Gray)
+            }, fontSize = 12.sp, color = Color.Gray, overflow = TextOverflow.Clip, maxLines = 1)
             Text(text = data.readyInMinutes.toString() + " mins", fontSize = 12.sp, color = Color.Gray)
         }
     }

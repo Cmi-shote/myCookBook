@@ -11,7 +11,7 @@ import com.example.mycookbook.data.database.entities.FavoritesEntity
 import com.example.mycookbook.data.database.entities.GroceryEntity
 import com.example.mycookbook.data.database.entities.RecipesEntity
 import com.example.mycookbook.data.model.FoodRecipe
-import com.example.mycookbook.data.model.Grocery
+import com.example.mycookbook.data.model.toFoodRecipe
 import com.example.mycookbook.presentation.utils.handleFoodRecipesResponse
 import com.example.mycookbook.presentation.utils.hasInternetConnection
 import com.example.mycookbook.util.Constants.Companion.API_KEY
@@ -30,8 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class RecipesViewModel(
     private val context: Context,
@@ -169,11 +169,13 @@ class RecipesViewModel(
 
     private suspend fun getRecipesSafeCall(queries: Map<String, String>) {
         _recipes.value = NetworkResult.Loading()
+
         if (hasInternetConnection(context)) {
             try {
                 val response = repository.remote.getRecipes(queries)
                 val result = handleFoodRecipesResponse(response)
                 _recipes.value = result
+
                 val popularRecipesList = result.data?.results?.filter { recipe ->
                     recipe.aggregateLikes > 1000
                 } ?: emptyList()
@@ -188,7 +190,40 @@ class RecipesViewModel(
                 _recipes.value = NetworkResult.Error("Recipes not found.")
             }
         } else {
-            _recipes.value = NetworkResult.Error("No Internet Connection.")
+            // No internet connection - try to load from cache
+            try {
+                val cachedRecipes = getCachedRecipes()
+                if (cachedRecipes != null && cachedRecipes.results.isNotEmpty()) {
+                    _recipes.value = NetworkResult.Success(cachedRecipes)
+
+                    // Also populate popular recipes from cache
+                    val popularRecipesList = cachedRecipes.results.filter { recipe ->
+                        recipe.aggregateLikes > 1000
+                    }
+                    _popularRecipes.value = FoodRecipe(popularRecipesList)
+                } else {
+                    // Only show error if there's no cache AND no internet (first time user)
+                    _recipes.value = NetworkResult.Error("No Internet Connection.")
+                }
+            } catch (e: Exception) {
+                // Error reading from cache, show no internet error
+                _recipes.value = NetworkResult.Error("No Internet Connection.")
+            }
+        }
+    }
+
+    private suspend fun getCachedRecipes(): FoodRecipe? {
+        return try {
+            val cachedEntities = repository.local.readRecipes().first()
+            if (cachedEntities.isNotEmpty()) {
+                // Since RecipesEntity contains FoodRecipe, just get the first one
+                // Assuming you cache one FoodRecipe per entity
+                cachedEntities.firstOrNull()?.toFoodRecipe()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 

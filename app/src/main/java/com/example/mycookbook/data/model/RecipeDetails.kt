@@ -1,6 +1,7 @@
 package com.example.mycookbook.data.model
 
 import android.os.Parcelable
+import com.example.mycookbook.data.database.entities.RecipesEntity
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
@@ -64,4 +65,8 @@ fun String.toDirectionList(): List<Direction> {
     return directions.mapIndexed { index, description ->
         Direction(index + 1, description, directions.size)
     }
+}
+
+fun RecipesEntity.toFoodRecipe(): FoodRecipe {
+    return this.foodRecipe
 }
