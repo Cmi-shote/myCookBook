@@ -100,10 +100,17 @@ fun RecipesScreen(
                                     style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
-                                RecipeCardRow(recipeDetails = recipe, onRecipeClick = onRecipeClick, viewModel = viewModel)
+                                RecipeCardRow(
+                                    recipeDetails = recipe,
+                                    onRecipeClick = onRecipeClick,
+                                    viewModel = viewModel
+                                )
                             }
                             Spacer(modifier = Modifier.height(24.dp))
-                            TrendingNowSection(popularRecipes.results, onRecipeClick = onRecipeClick)
+                            TrendingNowSection(
+                                popularRecipes.results,
+                                onRecipeClick = onRecipeClick
+                            )
                             Spacer(modifier = Modifier.height(24.dp))
                             if (favoriteRecipes.isNotEmpty()) {
                                 Text(
@@ -126,9 +133,7 @@ fun RecipesScreen(
                 ErrorScreen(
                     message = (recipes as NetworkResult.Error).message ?: "An error occurred",
                     onRetryClick = {
-//                        if (hasInternetConnection(context)) {
-                            viewModel.getRecipes(viewModel.applyQueries())
-//                        }
+                        viewModel.getRecipes(viewModel.applyQueries())
                     }
                 )
             }
@@ -137,7 +142,11 @@ fun RecipesScreen(
 }
 
 @Composable
-fun RecipeCardRow(recipeDetails: List<RecipeDetails>, onRecipeClick: (RecipeDetails) -> Unit, viewModel: RecipesViewModel) {
+fun RecipeCardRow(
+    recipeDetails: List<RecipeDetails>,
+    onRecipeClick: (RecipeDetails) -> Unit,
+    viewModel: RecipesViewModel
+) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -148,13 +157,18 @@ fun RecipeCardRow(recipeDetails: List<RecipeDetails>, onRecipeClick: (RecipeDeta
 }
 
 @Composable
-fun RecipeCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit, viewModel: RecipesViewModel, modifier: Modifier = Modifier) {
+fun RecipeCard(
+    data: RecipeDetails,
+    onRecipeClick: (RecipeDetails) -> Unit,
+    viewModel: RecipesViewModel,
+    modifier: Modifier = Modifier
+) {
     var isFavorite by remember { mutableStateOf(false) }
 
     LaunchedEffect(data.recipeId) {
         isFavorite = viewModel.isFavorite(data.recipeId)
     }
-    
+
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
@@ -324,8 +338,14 @@ fun TrendingCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit) {
                     .clip(CircleShape)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = data.title, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 3, textAlign = TextAlign.Center,
-                overflow = TextOverflow.Ellipsis)
+            Text(
+                text = data.title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                maxLines = 3,
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis
+            )
             Text(text = data.dishTypes.take(2).joinToString(", ") {
                 it.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
@@ -333,7 +353,11 @@ fun TrendingCard(data: RecipeDetails, onRecipeClick: (RecipeDetails) -> Unit) {
                     ) else it.toString()
                 }
             }, fontSize = 12.sp, color = Color.Gray, overflow = TextOverflow.Clip, maxLines = 1)
-            Text(text = data.readyInMinutes.toString() + " mins", fontSize = 12.sp, color = Color.Gray)
+            Text(
+                text = data.readyInMinutes.toString() + " mins",
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
         }
     }
 }
