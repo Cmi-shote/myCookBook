@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mycookbook.data.model.RecipeDetails
-import com.example.mycookbook.presentation.utils.ErrorScreen
-import com.example.mycookbook.presentation.utils.ShimmerLoadingScreen
+import com.example.mycookbook.presentation.components.ErrorScreen
+import com.example.mycookbook.presentation.components.ShimmerLoadingScreen
 import com.example.mycookbook.util.NetworkResult
 import java.util.Locale
 

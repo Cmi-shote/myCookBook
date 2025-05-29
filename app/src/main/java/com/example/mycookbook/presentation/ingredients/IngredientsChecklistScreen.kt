@@ -1,6 +1,8 @@
 package com.example.mycookbook.presentation.ingredients
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,12 +46,14 @@ import coil.request.ImageRequest
 import com.example.mycookbook.data.model.ExtendedIngredient
 import com.example.mycookbook.data.model.Grocery
 import com.example.mycookbook.data.model.RecipeDetails
+import com.example.mycookbook.presentation.components.CustomTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IngredientsChecklistScreen(
     modifier: Modifier = Modifier,
     onBack: () -> Unit = {},
+    onDelete: (Grocery) -> Unit = {},
     selectedGrocery: Grocery
 ) {
     val configuration = LocalConfiguration.current
@@ -58,6 +62,7 @@ fun IngredientsChecklistScreen(
         initialValue = SheetValue.PartiallyExpanded,
         skipHiddenState = true
     )
+    val context = LocalContext.current
     BottomSheetScaffold(
         scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState),
         sheetPeekHeight = screenHeight / 2, // Set peek height to half of the screen
@@ -65,7 +70,7 @@ fun IngredientsChecklistScreen(
             Content(selectedRecipe = selectedGrocery.recipeDetails)
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -82,6 +87,14 @@ fun IngredientsChecklistScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            )
+            CustomTopBar(
+                onBackPressed = onBack,
+                shouldOptionsShow = true,
+                onDeleteClicked = {
+                    onDelete(selectedGrocery)
+                    Toast.makeText(context, "Added to grocery list", Toast.LENGTH_SHORT).show()
+                }
             )
         }
     }

@@ -38,7 +38,7 @@ import com.example.mycookbook.data.database.entities.GroceryEntity
 import com.example.mycookbook.data.model.Grocery
 import com.example.mycookbook.data.model.RecipeDetails
 import com.example.mycookbook.presentation.recipes.RecipesViewModel
-import com.example.mycookbook.presentation.utils.ButtonGroup
+import com.example.mycookbook.presentation.components.ButtonGroup
 import com.example.mycookbook.presentation.utils.formatRecipeSummary
 import java.time.LocalDate
 

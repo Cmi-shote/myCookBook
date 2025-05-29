@@ -81,7 +81,8 @@ fun AppNavigation(
                 viewModel = viewModel,
                 onNavigateToSource = { url ->
                     navController.navigate(AppRoute.RecipeSourceRoute(url))
-                }
+                },
+                onBackPressed = { navController.popBackStack() }
             )
         }
 
@@ -95,7 +96,13 @@ fun AppNavigation(
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<AppRoute.GroceryCheckListRoute>()
             IngredientsChecklistScreen(
-                selectedGrocery = args.selectedGrocery
+                selectedGrocery = args.selectedGrocery, onBack = {
+                    navController.popBackStack()
+                },
+                onDelete = { grocery ->
+                    viewModel.deleteGroceryItem(grocery.recipeDetails.recipeId)
+                    navController.popBackStack()
+                }
             )
         }
 

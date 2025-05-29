@@ -1,5 +1,6 @@
 package com.example.mycookbook.presentation.details
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mycookbook.data.model.RecipeDetails
+import com.example.mycookbook.presentation.components.CustomTopBar
 import com.example.mycookbook.presentation.recipes.RecipesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,7 +29,8 @@ fun DetailsScreen(
     modifier: Modifier = Modifier,
     selectedRecipe: RecipeDetails,
     viewModel: RecipesViewModel,
-    onNavigateToSource: (String) -> Unit
+    onNavigateToSource: (String) -> Unit,
+    onBackPressed: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp // Get the device screen height
@@ -43,7 +46,7 @@ fun DetailsScreen(
             DetailsPage(selectedRecipe = selectedRecipe, viewModel = viewModel, onNavigateToSource = {onNavigateToSource(selectedRecipe.sourceUrl)})
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -58,6 +61,9 @@ fun DetailsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            )
+            CustomTopBar(
+                onBackPressed = onBackPressed
             )
         }
     }

@@ -237,12 +237,10 @@ class RecipesViewModel(
             }
         }
 
-    fun deleteGroceryItem(groceryEntity: GroceryEntity) =
+    fun deleteGroceryItem(recipeId: Int) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.local.deleteGroceryItem(groceryEntity)
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Item removed from grocery list", Toast.LENGTH_SHORT).show()
-            }
+            val groceryEntity = groceryList.value.find { it.result.recipeDetails.recipeId == recipeId }
+            groceryEntity?.let { repository.local.deleteGroceryItem(it) }
         }
 
     fun isFavorite(recipeId: Int): Boolean {
