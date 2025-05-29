@@ -45,9 +45,6 @@ class RecipesViewModel(
 
     val readMealAndDietType = dataStoreRepository.readMealAndDietType
 
-    private val _backOnlineState = MutableStateFlow(false)
-    val backOnlineState: StateFlow<Boolean> = _backOnlineState.asStateFlow()
-
     private val _recipes = MutableStateFlow<NetworkResult<FoodRecipe>>(NetworkResult.Loading())
     val recipes: StateFlow<NetworkResult<FoodRecipe>> = _recipes.asStateFlow()
 
@@ -64,11 +61,6 @@ class RecipesViewModel(
     val groceryList: StateFlow<List<GroceryEntity>> = _groceryList.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            dataStoreRepository.readBackOnline.collect { backOnlineValue ->
-                _backOnlineState.value = backOnlineValue
-            }
-        }
 
         // Observe favorite recipes
         viewModelScope.launch {
