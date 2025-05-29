@@ -96,7 +96,7 @@ fun RecipesScreen(
                                     text = "Favorite Recipes",
                                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                                 )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
                                 RecipeCardRow(
                                     recipeDetails = favoriteRecipes.map { it.result },
                                     onRecipeClick = onRecipeClick,

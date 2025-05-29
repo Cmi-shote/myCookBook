@@ -55,7 +55,8 @@ fun ExploreScreen(modifier: Modifier = Modifier, viewModel: RecipesViewModel, on
             onValueChange = { query ->
                 searchQuery = query
             },
-            viewModel = viewModel
+            viewModel = viewModel,
+
         )
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -129,12 +130,6 @@ fun SearchBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
-        shape = RoundedCornerShape(32.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            unfocusedContainerColor = Color(0xFFF5F6FA),
-            focusedContainerColor = Color(0xFFF5F6FA),
-            unfocusedBorderColor = Color.Transparent,
-            focusedBorderColor = Color.Transparent
-        )
+        shape = RoundedCornerShape(32.dp)
     )
 }

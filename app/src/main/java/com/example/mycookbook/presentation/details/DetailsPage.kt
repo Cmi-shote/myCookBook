@@ -202,7 +202,7 @@ fun NutritionInfoItem(label: String, value: String, progress: Float) {
             trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
         )
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = value, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
+            Text(text = value, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Text(text = label, fontSize = 12.sp, color = Color.Gray)
         }
     }
