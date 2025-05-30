@@ -21,31 +21,31 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.mycookbook.R
 import kotlinx.coroutines.delay
 
-@Composable
-fun SplashScreen(
-    modifier: Modifier = Modifier,
-    navigateToPage: () -> Unit
-) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_anim))
-    val progress by animateLottieCompositionAsState(composition)
-    LaunchedEffect(Unit) {
-        delay(3000)
-        navigateToPage()
-    }
-
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        LottieAnimation(
-            composition = composition,
-            progress = { progress },
-            modifier = Modifier.size(400.dp)
-        )
-    }
-}
+//@Composable
+//fun SplashScreen(
+//    modifier: Modifier = Modifier,
+//    navigateToPage: () -> Unit
+//) {
+////    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_anim))
+////    val progress by animateLottieCompositionAsState(composition)
+//    LaunchedEffect(Unit) {
+//        delay(3000)
+//        navigateToPage()
+//    }
+//
+//
+//    Column(
+//        modifier = modifier
+//            .fillMaxSize()
+//            .background(MaterialTheme.colorScheme.surface),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//
+//        LottieAnimation(
+//            composition = composition,
+//            progress = { progress },
+//            modifier = Modifier.size(400.dp)
+//        )
+//    }
+//}

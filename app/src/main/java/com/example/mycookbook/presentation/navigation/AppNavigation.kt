@@ -31,27 +31,17 @@ import com.example.mycookbook.presentation.ingredients.IngredientsChecklistScree
 import com.example.mycookbook.presentation.landingPage.LandingPage
 import com.example.mycookbook.presentation.recipes.RecipesScreen
 import com.example.mycookbook.presentation.recipes.RecipesViewModel
-import com.example.mycookbook.presentation.splashScreen.SplashScreen
 import org.koin.androidx.compose.koinViewModel
 import kotlin.reflect.typeOf
 
 @Composable
 fun AppNavigation(
-    navController: NavHostController, nextDestination: AppRoute) {
+    navController: NavHostController, startDestination: AppRoute) {
     val viewModel: RecipesViewModel = koinViewModel()
     NavHost(
         navController = navController,
-        startDestination = AppRoute.SplashScreen
+        startDestination = startDestination
     ) {
-        composable<AppRoute.SplashScreen> {
-            SplashScreen(
-                navigateToPage = {
-                    navController.popBackStack()
-                    navController.navigate(nextDestination)
-                }
-            )
-        }
-
         // Onboarding screen
         composable<AppRoute.OnboardingRoute> {
             LandingPage(

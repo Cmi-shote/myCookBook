@@ -104,4 +104,5 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.coil)
+    implementation(libs.core.splashscreen)
 }

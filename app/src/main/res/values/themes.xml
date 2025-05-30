@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.MyCookBook" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/background</item>
-        <item name="windowSplashScreenAnimatedIcon">@null</item>
-        <item name="postSplashScreenTheme">@style/Theme.MyCookBook</item>
-    </style>
+
+    <style name="Theme.MyCookBook" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
