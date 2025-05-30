@@ -5,6 +5,7 @@
     android:viewportHeight="450">
 
   <group
+      android:name="animationGroup"
       android:pivotX="225"
       android:pivotY="225"
       android:scaleX="0.5"
